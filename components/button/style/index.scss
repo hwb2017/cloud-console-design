@@ -1,0 +1,74 @@
+@charset "UTF-8";
+@use "sass:map";
+
+@import "../../style/index.scss";
+
+.ccd-button {
+    display: inline-block;
+    white-space: nowrap;
+    cursor: pointer;
+    background: var(--ccd-button-normal-background-color);
+    border: var(--ccd-border-base);
+    border-color: var(--ccd-button-normal-border-color);
+    color: var(--ccd-button-normal-font-color);
+    -webkit-appearance: none;
+    text-align: center;
+    box-sizing: border-box;
+    outline: none;
+    margin: 0;
+    transition: 0.1s;
+    font-weight: var(--ccd-button-font-weight);
+    @include user-select(none);
+    padding: var(--ccd-button-padding-vertical-default) var(--ccd-button-padding-horizontal-default);
+    font-size: var(--ccd-button-font-size-default);
+    border-radius: var(--ccd-button-border-radius-default);
+   
+    &:hover,
+    &:focus {
+        color: var(--ccd-color-primary);
+        border-color: map.get($--colors, 'orange', 'light-3');
+        background-color: map.get($--colors, 'orange', 'light-5');
+    }
+
+    &:active {
+        color: map.get($--colors, 'orange', 'shade-1');
+        border-color: map.get($--colors, 'orange', 'shade-1');
+        outline: none;
+    }
+
+    &.is-disabled {
+        &,
+        &:hover,
+        &:focus {
+            color: var(--ccd-button-disabled-font-color);
+            cursor: not-allowed;
+            background-image: none;
+            background-color: var(--ccd-button-disabled-background-color);
+            border-color: var(--ccd-button-disabled-border-color);
+        }
+    }
+
+    &.is-loading {
+        position: relative;
+        pointer-events: none;
+
+        // 这里的伪类相当于给button套了一个遮罩层, 略大于button自身的大小
+        &::before {
+            pointer-events: none;
+            content: '';
+            position: absolute;
+            left: -1px;
+            top: -1px;
+            right: -1px;
+            bottom: -1px;
+            border-radius: inherit;
+            background-color: rgba(255, 255, 255, 0.35);
+        }
+    }
+
+    &.ccd-button--primary {
+        background: var(--ccd-button-primary-background-color);
+        border-color: var(--ccd-button-primary-border-color);
+        color: var(--ccd-button-primary-font-color);
+    }
+}

@@ -1,0 +1,59 @@
+@use "sass:map";
+
+@import "color";
+@import "motion";
+@import "mixin";
+@import "var";
+
+:root {
+    // Color
+    --ccd-color-primary: #{$--color-primary};
+    --ccd-color-white: #{$--color-white};
+    --ccd-color-black: #{$--color-black};
+    // --ccd-text-color-#{$type}
+    @each $type in (primary, regular, secondary, placeholder) {
+        @include set-css-var-type('text-color', $type, $--text-color);
+    }
+    // --ccd-border-color-#{$type}
+    @each $type in (base, light, lighter, extra-light) {
+        @include set-css-var-type('border-color', $type, $--border-color);
+    }
+
+    // Border
+    --ccd-border-width-base: 1px;
+    --ccd-border-style-base: solid;
+    --ccd-border-base: var(--ccd-border-width-base) var(--ccd-border-style-base) 
+      var(--ccd-border-color-base);
+
+    // Typography
+    --ccd-font-weight: 500;
+
+    // some var for component, but because they are used in many places, need to be global
+    // Button
+    --ccd-button-font-weight: var(--ccd-font-weight);
+    --ccd-button-normal-font-color: var(--ccd-text-color-regular);
+    --ccd-button-normal-background-color: var(--ccd-color-white);
+    --ccd-button-normal-border-color: var(--ccd-border-color-base);
+    --ccd-button-primary-font-color: var(--ccd-color-white);
+    --ccd-button-primary-background-color: var(--ccd-color-primary);
+    --ccd-button-primary-border-color: var(--ccd-border-color-base);    
+    --ccd-button-disabled-font-color: var(--ccd-text-color-placeholder);
+    --ccd-button-disabled-background-color: var(--ccd-color-white);
+    --ccd-button-disabled-border-color: var(--ccd-border-color-light);
+    // --ccd-button-font-size-#{$type}
+    @each $type in (default, medium, small, mini) {
+        @include set-css-var-type('button-font-size', $type, $--button-font-size);
+    }
+    // --ccd-button-border-radius-#{$type}
+    @each $type in (default, medium, small, mini) {
+        @include set-css-var-type('button-border-radius', $type, $--button-border-radius);
+    }
+    // --ccd-button-padding-vertical-#{$type}
+    @each $type in (default, medium, small, mini) {
+        @include set-css-var-type('button-padding-vertical', $type, $--button-padding-vertical);
+    }
+    // --ccd-button-padding-horizontal-#{$type}
+    @each $type in (default, medium, small, mini) {
+        @include set-css-var-type('button-padding-horizontal', $type, $--button-padding-horizontal);
+    }    
+}

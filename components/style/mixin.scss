@@ -1,0 +1,12 @@
+@use "sass:map";
+
+@mixin set-css-var-type($name, $type, $--variables) {
+    --ccd-#{$name}-#{$type}: #{map.get($--variables, $type)};
+}
+
+@mixin user-select($value) {
+    -moz-user-select: $value;
+    -webkit-user-select: $value;
+    -ms-user-select: $value;
+    user-select: $value;
+}
