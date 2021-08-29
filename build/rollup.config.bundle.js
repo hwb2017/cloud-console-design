@@ -1,5 +1,5 @@
 import path from "path";
-import { terser } from "rollup-plugin-terser";
+// import { terser } from "rollup-plugin-terser";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import vuePlugin from "rollup-plugin-vue";
 import typescript from "rollup-plugin-typescript2";
@@ -26,7 +26,7 @@ export default [
         ],
         extract: 'style/index.css'
       }),        
-      terser(),
+      // terser(),
       nodeResolve(),
       vuePlugin(),
       typescript({

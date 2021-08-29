@@ -1,1 +1,1 @@
-export { default as ElButton } from "./button";
+export { default as CButton } from "./button";

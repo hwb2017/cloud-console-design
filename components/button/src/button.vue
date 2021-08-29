@@ -11,8 +11,6 @@
     :disabled="disabled || loading"
     @click="handleClick"
   >
-    <!-- <i v-if="loading" class="ccd-icon-loading"></i>
-    <i v-if="iconName && !loading" :class="() => `ccd-icon-${iconName}`"></i> -->
     <span v-if="$slots.default"><slot></slot></span>
   </button>
 </template>
