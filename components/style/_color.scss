@@ -28,26 +28,26 @@ $--color-primary: map.get($--colors, 'orange', 'base');
 
 @mixin set-color-light($color, $level) {
     $--colors: map.deep-merge(
-        $--colors,
         (
-            $color: (
+            #{$color}: (
                 'light-#{$level}':
                 mix($--color-white, $color, math.percentage(math.div($level, 10))),
             ),
-        )
-    );
+        ),
+        $--colors
+    ) !global;
 }
 
 @mixin set-color-shade($color, $level) {
     $--colors: map.deep-merge(
-        $--colors,
         (
-            $color: (
+            #{$color}: (
                 'shade-#{$level}':
                 mix($--color-black, $color, math.percentage(math.div($level, 10))),
             ),
-        )
-    );
+        ),
+        $--colors
+    ) !global;
 }
 
 @each $color in (orange, blue, lime, green) {
