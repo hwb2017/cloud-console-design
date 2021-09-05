@@ -1,5 +1,5 @@
 import type { App, Plugin } from "vue";
-import Button from "./src/button.vue";
+import Button from "./src/index.vue";
 import "./style/index.scss"
 
 Button.install = (app: App): void => {

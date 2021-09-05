@@ -1,6 +1,9 @@
 @use "sass:map";
 
 // Typography
+$--font-path: 'fonts' !default;
+$--font-display: 'fallback' !default;
+
 $--font-size: () !default;
 $--font-size: map.merge(
     (
