@@ -1,6 +1,6 @@
 {
   "name": "cloud-console-design",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": false,
   "main": "dist/index.esm.js",
   "module": "dist/index.esm.js",
@@ -9,7 +9,9 @@
     "dist",
     "components"
   ],
-  "sideEffects": false,
+  "sideEffects": [
+    "dist/style/*"
+  ],
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "npm run build:esm-bundle",
