@@ -7,6 +7,7 @@ import pkg from "../package.json";
 import postcss from "rollup-plugin-postcss";
 import autoprefixer from "autoprefixer";
 import cssnano from "cssnano";
+import copy from "rollup-plugin-copy";
 
 const deps = Object.keys(pkg.dependencies)
 
@@ -42,6 +43,11 @@ export default [
           ],
         },
         abortOnError: false,
+      }),
+      copy({
+        targets: [
+          { src: 'components/icon/style/fonts/*', dest: 'dist/style/fonts' }
+        ]
       })
     ],
     // rollup打包过程中遇到的所有模块名(id), 如果通过external函数调用后为true，则视为外部依赖，不进行打包
