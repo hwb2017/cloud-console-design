@@ -2,14 +2,15 @@ import path from "path";
 // import { terser } from "rollup-plugin-terser";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import vuePlugin from "rollup-plugin-vue";
-import typescript from "rollup-plugin-typescript2";
+// import typescript from "rollup-plugin-typescript2";
 import pkg from "../package.json";
 import postcss from "rollup-plugin-postcss";
 import autoprefixer from "autoprefixer";
 import cssnano from "cssnano";
 import copy from "rollup-plugin-copy";
+import esbuild from "rollup-plugin-esbuild";
 
-const deps = Object.keys(pkg.dependencies)
+const deps = Object.keys(pkg.dependencies);
 
 export default [
   {
@@ -26,24 +27,25 @@ export default [
           cssnano()
         ],
         extract: 'style/index.css'
-      }),        
+      }),       
       // terser(),
       nodeResolve(),
       vuePlugin(),
-      typescript({
+      // typescript({
         // tsconfig 的默认搜索路径为 rollup 命令执行时所在的路径
-        tsconfigOverride: {
-          'include': [
-            'components/**/*',
-            'typings/vue-shim.d.ts',
-          ],
-          'exclude': [
-            'node_modules',
-            'components/**/__tests__/*',
-          ],
-        },
-        abortOnError: false,
-      }),
+        // tsconfigOverride: {
+        //   'include': [
+        //     'components/**/*',
+        //     'typings/vue-shim.d.ts',
+        //   ],
+        //   'exclude': [
+        //     'node_modules',
+        //     'components/**/__tests__/*',
+        //   ],
+        // },
+        // abortOnError: false,
+      // }),
+      esbuild(),
       copy({
         targets: [
           { src: 'components/icon/style/fonts/*', dest: 'dist/style/fonts' }

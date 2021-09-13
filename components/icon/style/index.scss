@@ -42,8 +42,7 @@
     src:  url('#{$--font-path}/icomoon.eot?ejh0rg');
     src:  url('#{$--font-path}/icomoon.eot?ejh0rg#iefix') format('embedded-opentype'),
         url('#{$--font-path}/icomoon.ttf?ejh0rg') format('truetype'),
-        url('#{$--font-path}/icomoon.woff?ejh0rg') format('woff'),
-        url('#{$--font-path}/icomoon.svg?ejh0rg#icomoon') format('svg');
+        url('#{$--font-path}/icomoon.woff?ejh0rg') format('woff');
     font-weight: normal;
     font-style: normal;
     font-display: $--font-display;

@@ -4,5 +4,9 @@
 module.exports = {
   configureWebpack: {
     mode: "production",
+    optimization: {
+      usedExports: true,
+      minimize: true,
+    },
   },
 };
