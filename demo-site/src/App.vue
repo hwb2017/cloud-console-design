@@ -1,6 +1,6 @@
 <template>
   <div id="nav">
-    <c-button>test</c-button>
+    <c-button><i class="ccd-icon-spinner9"></i>test</c-button>
     <!-- <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link> -->
   </div>
