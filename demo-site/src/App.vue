@@ -1,10 +1,7 @@
 <template>
   <div id="nav">
-    <c-button><i class="ccd-icon-spinner9"></i>test</c-button>
-    <!-- <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link> -->
+    <c-button iconName="ccd-icon-codepen" :loading="true">test</c-button>
   </div>
-  <!-- <router-view /> -->
 </template>
 
 <style lang="scss">
