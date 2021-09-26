@@ -19,6 +19,9 @@
         @include set-css-var-type('border-color', $type, $--border-color);
     }
 
+    // Background
+    --ccd-background-color-base: #{$--background-color-base};
+
     // Border
     --ccd-border-width-base: 1px;
     --ccd-border-style-base: solid;
@@ -27,6 +30,20 @@
 
     // Typography
     --ccd-font-weight: 500;
+
+    // z-index
+    --ccd-index-normal: 1;
+    --ccd-index-top: 1000;
+    --ccd-index-popover: 2000;
+
+    // Transition
+    --ccd-transition-duration: #{map.get($--transition-duration, 'default')};
+    --ccd-transition-duration-fast: #{map.get($--transition-duration, 'fast')};
+
+    // Disabled base
+    --ccd-disabled-fill-base: var(--ccd-background-color-base);
+    --ccd-disabled-color-base: var(--ccd-text-color-placeholder);
+    --ccd-disabled-border-base: var(--ccd-border-color-light);
 
     // some var for component, but because they are used in many places, need to be global
     // Button

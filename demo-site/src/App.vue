@@ -1,18 +1,31 @@
 <template>
   <div id="nav">
     <c-button iconName="ccd-icon-codepen" :loading="true">test</c-button>
+    <c-tabs v-model:activeTabId="currentTabId" @tab-click="handleClick">
+      <c-tab-panel title="用户管理" tabId="first">用户管理</c-tab-panel>
+      <c-tab-panel title="配置管理" tabId="second">配置管理</c-tab-panel>
+    </c-tabs>
   </div>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script lang="ts">
+import { defineComponent, ref } from "vue"
 
+export default defineComponent({
+  setup() {
+    const currentTabId = ref("second")
+    const handleClick = (tab: any, event: Event) => {
+      console.log(tab, event)
+    }
+    return {
+      currentTabId,
+      handleClick
+    }
+  },
+})
+</script>
+
+<style lang="scss">
 #nav {
   padding: 30px;
 
