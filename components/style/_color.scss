@@ -19,12 +19,17 @@ $--colors: map.deep-merge(
         'grey': (
             'base': #bfbfbf,
         ),
+        'red': (
+            'base': #f56c6c,
+        ),      
     )
 );
 
 $--color-white: map.get($--colors, 'white');
 $--color-black: map.get($--colors, 'black');
 $--color-primary: map.get($--colors, 'orange', 'base');
+$--color-error: map.get($--colors, 'red', 'base');
+$--color-info: map.get($--colors, 'grey', 'base');
 
 @mixin set-color-light($color, $level) {
     $--colors: map.deep-merge(
