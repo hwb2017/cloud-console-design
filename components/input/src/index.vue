@@ -23,6 +23,7 @@
       ref="input$"
       class="ccd-input__inner"
       v-bind="$attrs"
+      :type="type"
       :disabled="disabled"
       :readonly="readonly"
       :autocomplete="autoComplete"
@@ -63,9 +64,10 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, nextTick, onMounted, ref, watch } from "vue"
-import { bool, integer, number, oneOf, oneOfType, string } from "vue-types"
+import { bool, integer, oneOf, oneOfType, string } from "vue-types"
 
 const inputProps = {
+  type: string().def("text"),
   modelValue: oneOfType([String, integer()]).def(""),
   autoComplete: string().def("off"),
   autoFocus: bool().def(false),
