@@ -73,7 +73,7 @@ const inputProps = {
   validateStatus: oneOf(["success", "error", "validating", ""]).def(""),
   placeholder: string().def(""),
   readonly: bool().def(false),
-  maxlength: number(),
+  maxlength: oneOfType([String, integer()]),
   clearable: bool().def(false),
   showPassword: bool().def(false),
   prefixIcon: string().def(""),
@@ -123,8 +123,8 @@ export default defineComponent({
       if (value === stateValue.value) return
 
       if (props.maxlength) {
-        const sliceIndex = inputExceed.value ? props.maxlength : textLength.value
-        value = value.slice(0, sliceIndex)
+        const sliceIndex = inputExceed.value ? textLength.value : props.maxlength
+        value = value.slice(0, Number(sliceIndex))
       }
 
       ctx.emit("update:modelValue", value)

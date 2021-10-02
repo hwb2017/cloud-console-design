@@ -5,7 +5,12 @@
       <c-tab-panel title="用户管理" tabId="first">用户管理</c-tab-panel>
       <c-tab-panel title="配置管理" tabId="second">配置管理</c-tab-panel>
     </c-tabs>
-    <c-input v-model="input1" clearable placeholder="Please Input" />
+    <c-input
+      v-model="input1"
+      maxlength="10"
+      clearable
+      placeholder="Please Input"
+    />
     <c-input
       v-model="input2"
       clearable
