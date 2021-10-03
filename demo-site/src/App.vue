@@ -36,6 +36,7 @@
     </c-input>
     <c-input-password v-model="input" placeholder="Please Input" />
     <c-input-textarea v-model="input" placeholder="Please Input" />
+    <c-input-number :defaultValue="defaultNumber" :max="110" :min="1" />
   </div>
 </template>
 
@@ -49,10 +50,12 @@ export default defineComponent({
       console.log(tab, event)
     }
     const input = ref("")
+    const defaultNumber = ref(3)
     return {
       currentTabId,
       handleClick,
       input,
+      defaultNumber,
     }
   },
 })

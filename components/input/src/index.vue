@@ -22,7 +22,6 @@
     <input
       ref="input$"
       class="ccd-input__inner"
-      v-bind="$attrs"
       :type="type"
       :disabled="disabled"
       :readonly="readonly"
@@ -195,6 +194,7 @@ export default defineComponent({
       handleKeydown,
       clear,
       isSuffixVisible,
+      setStateValue,
     }
   },
 })

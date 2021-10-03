@@ -3,6 +3,20 @@
 
 @import "../../style/index.scss";
 
+.ccd-input-number {
+  .ccd-input-group__prepend, .ccd-input-group__append {
+    padding: 0;
+    min-width: map.get($--input-height, 'default');
+    text-align: center;
+    cursor: pointer;
+
+
+    &:hover {
+      color: var(--ccd-color-primary);
+    }
+  }
+}
+
 .ccd-textarea {
   position: relative;
   display: inline-block;
