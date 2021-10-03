@@ -35,6 +35,7 @@
       <template #append>.com</template>
     </c-input>
     <c-input-password v-model="input" placeholder="Please Input" />
+    <c-input-textarea v-model="input" placeholder="Please Input" />
   </div>
 </template>
 
