@@ -46,6 +46,14 @@
   // Transition
   --ccd-transition-duration: #{map.get($--transition-duration, 'default')};
   --ccd-transition-duration-fast: #{map.get($--transition-duration, 'fast')};
+  // --ccd-transition-function-#{$type}
+  @each $type in (ease-in-out-bezier, fast-bezier) {
+    @include set-css-var-type('transition-function', $type, $--transition-function)
+  }
+  // --ccd-transition-#{$type}
+  @each $type in (all, fade, md-fade, fade-linear, border, color) {
+    @include set-css-var-type('transition', $type, $--transition)
+  }
 
   // Disabled base
   --ccd-disabled-fill-base: var(--ccd-background-color-base);
@@ -79,5 +87,7 @@
   // --ccd-button-padding-horizontal-#{$type}
   @each $type in (default, medium, small, mini) {
     @include set-css-var-type('button-padding-horizontal', $type, $--button-padding-horizontal);
-  }    
+  }
+
+  --ccd-popover-border-radius: 4px;
 }

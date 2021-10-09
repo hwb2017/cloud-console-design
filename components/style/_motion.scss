@@ -1,6 +1,28 @@
 @use "sass:map";
 
 // transition
+$--transition: () !default;
+$--transition: map.merge(
+  (
+    'all': all var(--ccd-transition-duration)
+      var(--ccd-transition-function-ease-in-out-bezier),
+    'fade': opacity var(--ccd-transition-duration)
+      var(--ccd-transition-function-fast-bezier),
+    'md-fade': (
+      transform var(--ccd-transition-duration)
+        var(--ccd-transition-function-fast-bezier),
+      opacity var(--ccd-transition-duration)
+        var(--ccd-transition-function-fast-bezier),
+    ),
+    'fade-linear': opacity var(--ccd-transition-duration-fast) linear,
+    'border': border-color var(--ccd-transition-duration-fast)
+      var(--ccd-transition-function-ease-in-out-bezier),
+    'color': color var(--ccd-transition-duration-fast)
+      var(--ccd-transition-function-ease-in-out-bezier),
+  ),
+  $--transition
+);
+
 $--transition-duration: () !default;
 $--transition-duration: map.merge(
   (
@@ -18,3 +40,13 @@ $--transition-function: map.merge(
   ),
   $--transition-function
 );
+
+// vue transition related style
+.ccd-fade-in-linear-enter-active,
+.ccd-fade-in-linear-leave-active {
+  transition: var(--ccd-transition-fade-linear);
+}
+.ccd-fade-in-linear-enter-from,
+.ccd-fade-in-linear-leave-to {
+  opacity: 0;
+}

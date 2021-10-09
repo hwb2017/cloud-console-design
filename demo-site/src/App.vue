@@ -37,6 +37,16 @@
     <c-input-password v-model="input" placeholder="Please Input" />
     <c-input-textarea v-model="input" placeholder="Please Input" />
     <c-input-number :defaultValue="defaultNumber" :max="110" :min="1" />
+    <c-popover
+      v-model:visible="dropdownMenuVisible"
+      placement="bottom"
+      content="this is content, this is content, this is content"
+      trigger="click"
+    >
+      <template #trigger>
+        <c-button>Hover to active</c-button>
+      </template>
+    </c-popover>
   </div>
 </template>
 
@@ -51,11 +61,13 @@ export default defineComponent({
     }
     const input = ref("")
     const defaultNumber = ref(3)
+    const dropdownMenuVisible = ref(false)
     return {
       currentTabId,
       handleClick,
       input,
       defaultNumber,
+      dropdownMenuVisible,
     }
   },
 })

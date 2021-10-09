@@ -1,0 +1,81 @@
+@charset "UTF-8";
+@use 'sass:map';
+
+@import "../../style/index.scss";
+
+.ccd-popover {
+  position: absolute;
+  border-radius: var(--ccd-popover-border-radius);
+  padding: 10px;
+  z-index: 2000;
+  font-size: 12px;
+  line-height: 1.2;
+  min-width: 10px;
+  overflow-wrap: break-word;
+  visibility: visible;
+  
+  $arrow-selector: #{& + '__arrow'};
+
+  &.is-dark {
+    color: var(--ccd-color-white);
+    background: var(--ccd-text-color-primary);
+    #{$arrow-selector}::before {
+      background: var(--ccd-text-color-primary);
+    }
+  }
+
+  &.is-light {
+    color: var(--ccd-color-white);
+    border: 1px solid var(--ccd-border-color-light);
+    #{$arrow-selector}::before {
+      border: 1px solid var(--ccd-border-color-light);
+      background: var(--ccd-color-white);
+    }
+  }
+
+  #{$arrow-selector} {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    &::before {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      content: '';
+      transform: rotate(45deg);
+      box-sizing: border-box;
+      background: var(--ccd-text-color-primary);
+    }
+  }
+
+  $arrow-direction: (
+    'top': 'bottom',
+    'bottom': 'top',
+    'left': 'right',
+    'right': 'left',
+  );
+  @each $placement, $direction in $arrow-direction {
+    &[data-popper-placement^='#{$placement}'] > #{$arrow-selector} {
+      #{$direction}: -5px;
+    }
+  }
+
+  $arrow-inner-sides: (
+    'top': 'left',
+    'bottom': 'right',
+    'left': 'bottom',
+    'right': 'top',
+  );
+  @each $placement, $adjacency in $arrow-inner-sides {
+    &.is-light[data-popper-placement^='#{$placement}'] {
+      #{$arrow-selector}::before {
+        border-#{$placement}-color: transparent;
+        border-#{$adjacency}-color: transparent;
+      }
+    }
+  }
+
+  &.is-pure {
+    padding: 0;
+  }
+}
