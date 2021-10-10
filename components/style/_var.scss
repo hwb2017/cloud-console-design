@@ -120,3 +120,15 @@ $--input-line-height: map.merge(
   ),
   $--input-line-height
 );
+
+// Tag
+$--tag: () !default;
+$--tag: map.merge(
+  (
+    'font-size': 12px,
+    'border-radius': 4px,
+    'padding': 0 10px,
+    'height': 28px,
+  ),
+  $--tag
+);

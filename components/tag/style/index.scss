@@ -1,0 +1,84 @@
+@charset "UTF-8";
+@use 'sass:map'; 
+
+@import "../../style/index.scss";
+
+@mixin genTheme (
+  $backgroundColorWeight,
+  $borderColorWeight,
+  $fontColorWeight,
+  $hoverColorWeight,
+) {
+  --ccd-tag-background-color: #{mix(
+    $--color-primary,
+    $--color-white,
+    $backgroundColorWeight
+  )};
+  --ccd-tag-border-color: #{mix(
+    $--color-primary,
+    $--color-white,
+    $borderColorWeight    
+  )};
+  --ccd-tag-font-color: #{mix(
+    $--color-primary,
+    $--color-white,
+    $fontColorWeight
+  )};
+  --ccd-tag-hover-color: #{mix(
+    $--color-primary,
+    $--color-white,
+    $hoverColorWeight
+  )};
+
+  background-color: var(--ccd-tag-background-color);
+  border-color: var(--ccd-tag-border-color);
+  color: var(--ccd-tag-font-color);
+
+  .ccd-tag__close {
+    color: var(--ccd-tag-font-color);
+    &:hover {
+      color: var(--ccd-color-white);
+      background-color: var(--ccd-tag-hover-color);
+    }
+  }
+}
+
+.ccd-tag {
+  display: inline-block;
+  height: map.get($--tag, 'height');
+  padding: map.get($--tag, 'padding');
+  line-height: map.get($--tag, 'height') - 2px;
+  font-size: map.get($--tag, 'font-size');
+  border: 1px solid;
+  border-radius: map.get($--tag, 'border-radius');
+  box-sizing: border-box;
+  white-space: nowrap;
+
+  .ccd-icon-cross {
+    border-radius: 50%;
+    text-align: center;
+    position: relative;
+    cursor: pointer;
+    font-size: 12px;
+    height: 16px;
+    width: 16px;
+    line-height: 16px;
+    vertical-align: middle;
+    top: -1px;
+    right: -5px;
+
+    &::before {
+      display: block;
+    }
+  }
+
+  &--light {
+    @include genTheme(10%, 20%, 100%, 100%);
+  }
+  &--dark {
+    @include genTheme(100%, 100%, 0, 80%);
+  }
+  &--plain {
+    @include genTheme(0, 40%, 100%, 100%);
+  }
+}

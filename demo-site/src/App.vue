@@ -47,11 +47,26 @@
         <c-button>Hover to active</c-button>
       </template>
     </c-popover>
+    <div>
+      <c-tag v-for="tag in tags" :key="tag" closable theme="plain" @close="handleClose(tag)">
+        {{ tag }}
+      </c-tag>
+      <c-input
+        v-if="inputVisible"
+        ref="saveTagInput$"
+        v-model="inputValue"
+        class="input-new-tag"
+        @keydown.enter="handleInputConfirm"
+        @blur="handleInputConfirm"
+      ></c-input>
+      <c-button v-else class="button-new-tag" @click="showInput">+ New Tag</c-button>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue"
+import { defineComponent, nextTick, ref } from "vue"
+import type { ComponentPublicInstance } from "vue"
 
 export default defineComponent({
   setup() {
@@ -62,12 +77,42 @@ export default defineComponent({
     const input = ref("")
     const defaultNumber = ref(3)
     const dropdownMenuVisible = ref(false)
+    const tags = ref(["Tag 1", "Tag 2", "Tag 3", "Tag 4", "Tag 5"]);
+    const inputVisible = ref(false)
+    const inputValue = ref("")
+    const saveTagInput$ = ref<ComponentPublicInstance | null>(null)
+    const handleClose= (tag: string) => {
+      tags.value.splice(tags.value.indexOf(tag), 1)
+    }
+    const showInput = () => {
+      inputVisible.value = true
+      nextTick(() => {
+        if (saveTagInput$.value) {
+          (saveTagInput$.value.$refs as any).input$.focus()
+        }
+      })
+    }
+    const handleInputConfirm = () => {
+      const value = inputValue.value
+      if (value) {
+        tags.value.push(value)
+      }
+      inputVisible.value = false
+      inputValue.value = ""
+    }
     return {
+      saveTagInput$,
       currentTabId,
       handleClick,
       input,
       defaultNumber,
       dropdownMenuVisible,
+      tags,
+      inputVisible,
+      inputValue,
+      showInput,
+      handleClose,
+      handleInputConfirm,
     }
   },
 })
@@ -83,6 +128,25 @@ export default defineComponent({
 
     &.router-link-exact-active {
       color: #42b983;
+    }
+  }
+  .ccd-tag + .ccd-tag {
+    margin-left: 10px;
+  }
+  .button-new-tag {
+    margin-left: 10px;
+    height: 30px;
+    line-height: 30px;
+    padding: 0 10px;
+  }
+  .input-new-tag {
+    width: 90px;
+    height: 30px;
+    margin-left: 10px;
+    vertical-align: middle;
+    .ccd-input__inner {
+      height: 30px;
+      vertical-align: top;
     }
   }
 }
