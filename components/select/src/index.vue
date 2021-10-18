@@ -1,11 +1,12 @@
 <template>
-  <div></div>
+  <div><c-popover /><c-tag /></div>
 </template>
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { arrayOf, bool, integer, object, oneOf, oneOfType, string } from 'vue-types'
 import type { SelectOption } from "./type"
-
+import CPopover from "../../popover"
+import CTag from "../../tag"
 
 const selectProps = {
   disabled: bool().def(false),
@@ -29,6 +30,10 @@ const selectProps = {
 
 export default defineComponent({
   name: 'CSelect',
+  components: {
+    CPopover,
+    CTag,
+  },
   emits: [
     'update:modelValue',
     'change',
@@ -37,7 +42,8 @@ export default defineComponent({
     'visible-change',
   ],
   setup() {
-    
+    // input-calculator作用？
+    // 为什么不使用input元素的原生placeholder属性
   },
 })
 </script>

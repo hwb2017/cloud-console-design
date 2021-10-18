@@ -1,0 +1,62 @@
+@charset "UTF-8";
+@use 'sass:map';
+
+@import "../../style/index.scss";
+
+.ccd-scrollbar {
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+
+  &__wrap {
+    overflow: auto;
+    height: 100%;
+
+    &--hidden-default {
+      scrollbar-width: none;
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+  }
+
+  &__track {
+    position: absolute;
+    right: 2px;
+    bottom: 2px;
+    z-index: 1;
+    border-radius: 4px;
+
+    &.is-vertical {
+      width: 6px;
+      top: 2px;
+      > div {
+        width: 100%;
+      }
+    }
+
+    &.is-horizontal {
+      height: 6px;
+      left: 2px;
+      > div {
+        height: 100%;
+      }
+    }
+  }
+
+  &__thumb {
+    position: relative;
+    display: block;
+    width: 0;
+    height: 0;
+    border-radius: inherit;
+    background-color: map.get($--scrollbar, 'background-color');
+    transition: background-color map.get($--transition-duration, 'default');
+    opacity: map.get($--scrollbar, 'opacity');
+
+    &:hover {
+      background-color: map.get($--scrollbar, 'hover-background-color');
+      opacity: map.get($--scrollbar, 'hover-opacity');
+    }
+  }
+}

@@ -48,7 +48,13 @@
       </template>
     </c-popover>
     <div>
-      <c-tag v-for="tag in tags" :key="tag" closable theme="plain" @close="handleClose(tag)">
+      <c-tag
+        v-for="tag in tags"
+        :key="tag"
+        closable
+        theme="plain"
+        @close="handleClose(tag)"
+      >
         {{ tag }}
       </c-tag>
       <c-input
@@ -61,6 +67,11 @@
       ></c-input>
       <c-button v-else class="button-new-tag" @click="showInput">+ New Tag</c-button>
     </div>
+    <c-scrollbar height="400px" style="margin-top: 20px" @scroll="handleScroll">
+      <p v-for="item in 20" :key="item" class="scrollbar-demo-item">
+        {{ item }}
+      </p>
+    </c-scrollbar>
   </div>
 </template>
 
@@ -100,6 +111,9 @@ export default defineComponent({
       inputVisible.value = false
       inputValue.value = ""
     }
+    const handleScroll = (e: Event) => {
+      console.log("scroll", e)
+    }
     return {
       saveTagInput$,
       currentTabId,
@@ -113,6 +127,7 @@ export default defineComponent({
       showInput,
       handleClose,
       handleInputConfirm,
+      handleScroll,
     }
   },
 })
@@ -148,6 +163,18 @@ export default defineComponent({
       height: 30px;
       vertical-align: top;
     }
+  }
+  .scrollbar-demo-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 50px;
+    margin: 10px;
+    text-align: center;
+    border-radius: 4px;
+    border: 1px solid var(--ccd-color-primary);
+    background: var(--ccd-color-white);
+    color: var(--ccd-color-primary);
   }
 }
 </style>

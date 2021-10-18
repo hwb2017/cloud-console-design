@@ -11,6 +11,10 @@ export const checkNoUndefined = <T>(param: T | undefined): param is T => {
   return param === undefined ? false : true
 }
 
+export const checkNoNullable = <T>(param: T | null): param is T => {
+  return param === null ? false : true
+}
+
 export const generateId = ():number => Math.floor(Math.random()* 10000)
 
 export const isServer = () => {
