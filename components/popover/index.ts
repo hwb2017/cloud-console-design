@@ -7,3 +7,5 @@ Popover.install = (app: App): void => {
 }
 
 export default Popover as typeof Popover & Plugin
+
+export { Effect } from "./src/use-popper/type"

@@ -84,8 +84,19 @@ export default defineComponent({
   name: "CInput",
   inheritAttrs: false,
   props: inputProps,
-  emits: ["update:modelValue", "input", "change", "focus", "blur", "clear",
-    "mouseleave", "mouseenter", "keydown"],
+  emits: [
+    "update:modelValue",
+    "input",
+    "change",
+    "focus",
+    "blur",
+    "clear",
+    "mouseleave",
+    "mouseenter",
+    "keydown",
+    'compositionstart',
+    'compositionend',
+  ],
   setup(props, ctx) {
     const input$ = ref<HTMLInputElement | null>(null)
     const focused = ref(false)
@@ -143,10 +154,12 @@ export default defineComponent({
       focused.value = false
       ctx.emit("blur", event)
     }
-    const handleCompositionStart = () => {
+    const handleCompositionStart = (event: CompositionEvent) => {
       isComposing.value = true
+      ctx.emit('compositionstart', event)  
     }
-    const handleCompositionEnd = (event: Event) => {
+    const handleCompositionEnd = (event: CompositionEvent) => {
+      ctx.emit('compositionend', event)
       if (isComposing.value) {
         isComposing.value = false
         handleInput(event)
