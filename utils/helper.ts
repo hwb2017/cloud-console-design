@@ -35,6 +35,8 @@ export const isTemplate = (node: VNodeChild) => (node as VNode).type === 'templa
 
 export const isFragment = (node: VNodeChild) => (node as VNode).type === Fragment
 
+export const isObject = (val: unknown): val is Record<string | number | symbol, unknown> => val !== null && typeof val === 'object'
+
 /**
  * get a valid child node (not fragment nor comment)
  * @param node {VNode} node to be searched
@@ -59,4 +61,12 @@ export const getFirstValidNode = (
   } else {
     return getChildren(nodes as VNode, maxDepth)
   }
+}
+
+export const getValueByPath = <T = unknown>(obj: Record<string, unknown>, paths = ''): T | undefined => {
+  let ret: Record<string, unknown> | T = obj
+  paths.split('.').forEach((path) => {
+    ret = ret?.[path]
+  })
+  return ret as T | undefined
 }

@@ -21,11 +21,11 @@
       @before-enter="handleDropdownEnter"
     >
       <template #trigger>
-        <div class="select-trigger">
+        <div class="select-trigger" ref="selection$">
           <!-- <div v-if="isMultiple"></div> -->
           <c-input
             ref="reference$"
-            v-model="seletedLabel"
+            v-model="selectedLabel"
             :placeholder="currentPlaceholder"
             :auto-compelete="autocomplete"
             :disabled="selectDisabled"
@@ -33,25 +33,43 @@
             :class="{ 'is-focus': visible }"
             @focus="handleFocus"
             @blur="handleBlur"
-            
-          ></c-input>
+            @input="debouncedOnInputChange"
+            @compositionstart="handleComposition"
+            @compositionend="handleComposition"
+            @keydown.down.stop.prevent="navigationOptions('next')"
+            @keydown.up.stop.prevent="navigationOptions('prev')"
+            @keydown.enter.stop.prevent="selectOption"
+            @keydown.esc.stop.prevent="visible = false"
+            @keydown.tab="visible = false"
+            @mouseenter="inputHovering = true"
+            @mouseleave="inputHovering = false"
+          >
+          </c-input>
         </div>
+      </template>
+      <template #default>
+        <c-select-dropdown
+          ref="dropdown$"
+          :data="filteredOptions"
+          :width="popperSize"
+          :hovering-index="hoveringIndex"
+        ></c-select-dropdown>
       </template>
     </c-popover>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { arrayOf, bool, integer, object, oneOf, oneOfType, string, number } from 'vue-types'
+import { defineComponent, toRefs } from 'vue'
+import { array, bool, integer, object, oneOf, oneOfType, string, number } from 'vue-types'
 import CInput from "../../input"
 import CPopover, { Effect } from "../../popover"
-import CTag from "../../tag"
-import CScrollbar from "../../scrollbar"
-import CSelectMenu from "./select-dropdown.vue"
-import COption from "./option.vue"
+// import CTag from "../../tag"
+import CSelectDropdown from "./select-dropdown.vue"
+import type { OptionType, SelectProps } from "./type"
+import { useSelectStates, useSelect } from "./useSelect"
 
 const selectProps = {
-  modelValue: oneOfType([string(), number(), bool(), object()]),
+  modelValue: oneOfType([array(), string(), number(), bool(), object()]),
   disabled: bool().def(false),
   // Specifies the text to display when a data fetching error occurs. Make sure that you provide recoveryText
   errorText: string().def('Fetch error'),
@@ -62,8 +80,8 @@ const selectProps = {
   // Specifies the text for the recovery button. The text is displayed next to the error text. Use the onLoadItems event to perform a recovery action (for example, retrying the request)
   recoveryText: string().def('Try again'),
   placeholder: string().def('Please select'),
-  options: arrayOf(object()),
-  selectedOptions: arrayOf(object()),
+  options: array<OptionType>().def([]),
+  selectedOptions: array<OptionType>().def([]),
   statusType: oneOf(['pending', 'loading', 'finished', 'error']).def('finished'),
   keepOpen: bool().def(false),
   clearable: bool().def(false),
@@ -78,6 +96,9 @@ const selectProps = {
   remote: bool().def(false),
   collapseTags: bool().def(false),
   popperAppendToBody: bool().def(true),
+  noMatchText: string().def(""),
+  noDataText: string().def(""),
+  valueKey: string().def("value"),
 }
 
 export default defineComponent({
@@ -85,10 +106,8 @@ export default defineComponent({
   components: {
     CInput,
     CPopover,
-    CTag,
-    CScrollbar,
-    CSelectMenu,
-    COption,
+    // CTag,
+    CSelectDropdown,
   },
   props: selectProps,
   emits: [
@@ -98,9 +117,25 @@ export default defineComponent({
     'blur',
     'visible-change',
   ],
-  setup(props, ctx) {
+  setup(props: SelectProps, ctx) {
+    props.options
+    const states = useSelectStates(props)
+    const {
+      selectedLabel,
+    } = toRefs(states)
+    const {
+      toggleDropdown,
+      dropdownVisible,
+      handleDropdownEnter,
+      currentPlaceholder,
+    } = useSelect(props, states, ctx)
     return {
       Effect,
+      toggleDropdown,
+      dropdownVisible,
+      handleDropdownEnter,
+      selectedLabel,
+      currentPlaceholder,
     }
   },
 })

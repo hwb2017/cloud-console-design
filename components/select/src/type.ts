@@ -3,7 +3,7 @@ import type { Ref } from "vue"
 export type Option<T = any> = {
   disabled?: boolean
   label: string
-  value: T
+  value?: T
   // reserve for flexibility
   [props: string]: any
 }
@@ -12,7 +12,7 @@ export type OptionGroup<T = any> = Option & {
   options: Array<T>
 }
 
-export type SelectOption<T = any> = Option<T> | OptionGroup<T>
+export type OptionType<T = any> = Option<T> | OptionGroup<T>
 
 interface SelectGroupContext {
   disabled: boolean
@@ -42,22 +42,35 @@ export interface SelectContext {
   optionsArray: any[]
   selected: any | any[]
   setSelected(): void
-  onOptionCreate(vm: SelectOptionProxy): void
-  onOptionDestroy(key: number | string | Record<string, any>): void
-  handleOptionSelect(vm: unknown, byClick: boolean): void
 }
 
-export interface SelectOptionProxy {
-  value: string | number | Record<string, string>
-  label: string | number
-  created: boolean
-  disabled: boolean
-  currentLabel: string
-  itemSelected: boolean
-  isDisabled: boolean
-  select: SelectContext
-  visible: boolean
-  hover: boolean
-  hoverItem(): void
-  selectOptionClick(): void
+export interface SelectProps {
+  modelValue?: unknown[] | string | number | boolean | { [key: string]: unknown },
+  disabled: boolean,
+  errorText: string,
+  finishedText: string,
+  loadingText: string,
+  recoveryText: string,
+  placeholder: string,
+  options: OptionType[],
+  selectedOptions: OptionType[],
+  statusType: string,
+  keepOpen: boolean,
+  clearable: boolean,
+  isMultiple: boolean,
+  multipleLimit: number,
+  automaticDropdown: boolean,
+  autocomplete: boolean,
+  filterable: boolean,
+  allowCreate: boolean,
+  loading: boolean,
+  popperClass: string,
+  remote: boolean,
+  collapseTags: boolean,
+  popperAppendToBody: boolean,
+  noMatchText: string,
+  noDataText: string,
+  valueKey: string,
 }
+
+export type SelectEmits = 'update:modelValue' | 'change' | 'focus' | 'blur' | 'visible-change'

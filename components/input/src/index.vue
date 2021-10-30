@@ -146,6 +146,18 @@ export default defineComponent({
     const handleChange = (event: Event) => {
       ctx.emit("change", (event.target as HTMLInputElement).value)
     }
+    // 使得父组件可以触发CInput中原生input元素的focus方法和blur方法
+    const focus = () => {
+      nextTick(() => {
+        input$.value?.focus()
+      })
+    }
+    const blur = () => {
+      nextTick(() => {
+        input$.value?.blur()
+      })
+    }
+
     const handleFocus = (event: Event) => {
       focused.value = true
       ctx.emit("focus", event)
@@ -208,6 +220,8 @@ export default defineComponent({
       clear,
       isSuffixVisible,
       setStateValue,
+      focus,
+      blur,
     }
   },
 })
