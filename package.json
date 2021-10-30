@@ -1,6 +1,6 @@
 {
   "name": "cloud-console-design",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "private": false,
   "main": "dist/index.esm.js",
   "module": "dist/components/index.js",
@@ -19,7 +19,7 @@
     "build:components": "node build/individualComponents.js",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "pub": "node scripts/publish.js"
+    "prepublishOnly": "node scripts/prepublish.js"
   },
   "dependencies": {
     "@popperjs/core": "^2.10.2",

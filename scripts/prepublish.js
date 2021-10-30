@@ -44,9 +44,9 @@ function compile() {
     runCmdSync('npm', ['run', 'build']);
 }
 
-function npmPublish() {
-    runCmdSync('npm', ['publish', cwd]);
-}
+// function npmPublish() {
+//     runCmdSync('npm', ['publish', cwd]);
+// }
 
 function gitTag() {
     runCmdSync('git', ['tag', packageVersion]);
@@ -59,8 +59,8 @@ function publish() {
     checkVersion();    
     console.log("start compile artifacts...");
     compile();
-    console.log("start npm publish...");
-    npmPublish();
+    // console.log("start npm publish...");
+    // npmPublish();
     console.log("start create local git tag...");
     gitTag();
 }
