@@ -2,8 +2,13 @@
   "name": "cloud-console-design",
   "version": "0.1.8",
   "private": false,
-  "main": "dist/index.esm.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hwb2017/cloud-console-design.git"
+  },
+  "main": "dist/index.bundle.js",
   "module": "dist/components/index.js",
+  "unpkg": "dist/index.min.js",
   "style": "dist/style/index.css",
   "files": [
     "dist",
@@ -14,8 +19,8 @@
   ],
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "npm run build:esm-bundle && npm run build:components",
-    "build:esm-bundle": "rollup --config ./build/rollup.config.bundle.js",
+    "build": "npm run build:bundle && npm run build:components",
+    "build:bundle": "rollup --config ./build/rollup.config.bundle.js",
     "build:components": "node build/individualComponents.js",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
@@ -24,9 +29,7 @@
   "dependencies": {
     "@popperjs/core": "^2.10.2",
     "async-validator": "^4.0.7",
-    "core-js": "^3.6.5",
     "lodash-es": "^4.17.21",
-    "vue": "^3.2.6",
     "vue-types": "^4.0.1"
   },
   "devDependencies": {
@@ -69,6 +72,9 @@
     "typescript": "~4.1.5",
     "vue-jest": "^5.0.0-0"
   },
+  "peerDependencies": {
+    "vue": "^3.2.6"
+  },
   "gitHooks": {
     "pre-commit": "lint-staged"
   },
@@ -77,5 +83,8 @@
       "vue-cli-service lint",
       "git add"
     ]
+  },
+  "engines": {
+    "node": ">= 14"
   }
 }

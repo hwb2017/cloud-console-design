@@ -1,61 +1,60 @@
 import path from "path";
-// import { terser } from "rollup-plugin-terser";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import vuePlugin from "rollup-plugin-vue";
-// import typescript from "rollup-plugin-typescript2";
-import pkg from "../package.json";
 import postcss from "rollup-plugin-postcss";
 import autoprefixer from "autoprefixer";
 import cssnano from "cssnano";
 import copy from "rollup-plugin-copy";
 import esbuild from "rollup-plugin-esbuild";
+import { terser } from "rollup-plugin-terser";
 
-const deps = Object.keys(pkg.dependencies);
+const entry = path.resolve(__dirname, "../components/index.ts");
+const commonPlugins = [
+  copy({
+    targets: [
+      { src: 'components/icon/style/fonts/*', dest: 'dist/style/fonts' }
+    ]
+  }),      
+  postcss({
+    use: ['sass'],
+    plugins: [
+      autoprefixer(),
+      cssnano()
+    ],
+    extract: 'style/index.css'
+  }),       
+  nodeResolve(),
+  vuePlugin(),
+  esbuild(),
+]
+// rollup打包过程中遇到的所有模块名(id), 如果通过external函数调用后为true，则视为外部依赖，不进行打包
+const externalDependencies = ["vue"]
 
 export default [
   {
-    input: path.resolve(__dirname, "../components/index.ts"),
+    input: entry,
     output: {
-      format: "es",
-      file: "dist/index.esm.js",
+      format: "cjs",
+      file: "dist/index.bundle.js",
     },
-    plugins: [ 
-      postcss({
-        use: ['sass'],
-        plugins: [
-          autoprefixer(),
-          cssnano()
-        ],
-        extract: 'style/index.css'
-      }),       
-      // terser(),
-      nodeResolve(),
-      vuePlugin(),
-      // typescript({
-        // tsconfig 的默认搜索路径为 rollup 命令执行时所在的路径
-        // tsconfigOverride: {
-        //   'include': [
-        //     'components/**/*',
-        //     'typings/vue-shim.d.ts',
-        //   ],
-        //   'exclude': [
-        //     'node_modules',
-        //     'components/**/__tests__/*',
-        //   ],
-        // },
-        // abortOnError: false,
-      // }),
-      esbuild(),
-      copy({
-        targets: [
-          { src: 'components/icon/style/fonts/*', dest: 'dist/style/fonts' }
-        ]
-      })
+    plugins: commonPlugins,
+    external: externalDependencies,
+  },
+  {
+    input: entry,
+    output: {
+      format: "umd",
+      file: "dist/index.min.js",
+      exports: "named",
+      name: "CloudConsoleDesign",
+      globals: {
+        vue: "Vue",
+      }
+    },
+    plugins: [
+      ...commonPlugins,
+      terser()
     ],
-    // rollup打包过程中遇到的所有模块名(id), 如果通过external函数调用后为true，则视为外部依赖，不进行打包
-    external(id) {
-      return /^vue/.test(id)
-        || deps.some(k => new RegExp('^' + k).test(id))
-    },
-  }
+    external: externalDependencies,
+  },  
 ]
