@@ -65,55 +65,62 @@
         @keydown.enter="handleInputConfirm"
         @blur="handleInputConfirm"
       ></c-input>
-      <c-button v-else class="button-new-tag" @click="showInput">+ New Tag</c-button>
+      <c-button v-else class="button-new-tag" @click="showInput"
+        >+ New Tag</c-button
+      >
     </div>
     <c-scrollbar height="400px" style="margin-top: 20px" @scroll="handleScroll">
       <p v-for="item in 20" :key="item" class="scrollbar-demo-item">
         {{ item }}
       </p>
     </c-scrollbar>
+    <div class="select-demo">
+      <c-select v-model="selectedValue" :options="options"></c-select>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, nextTick, ref } from "vue"
-import type { ComponentPublicInstance } from "vue"
+import { defineComponent, nextTick, ref } from "vue";
+import type { ComponentPublicInstance } from "vue";
 
 export default defineComponent({
   setup() {
-    const currentTabId = ref("second")
+    const currentTabId = ref("second");
     const handleClick = (tab: any, event: Event) => {
-      console.log(tab, event)
-    }
-    const input = ref("")
-    const defaultNumber = ref(3)
-    const dropdownMenuVisible = ref(false)
+      console.log(tab, event);
+    };
+    const input = ref("");
+    const defaultNumber = ref(3);
+    const dropdownMenuVisible = ref(false);
     const tags = ref(["Tag 1", "Tag 2", "Tag 3", "Tag 4", "Tag 5"]);
-    const inputVisible = ref(false)
-    const inputValue = ref("")
-    const saveTagInput$ = ref<ComponentPublicInstance | null>(null)
-    const handleClose= (tag: string) => {
-      tags.value.splice(tags.value.indexOf(tag), 1)
-    }
+    const inputVisible = ref(false);
+    const inputValue = ref("");
+    const saveTagInput$ = ref<ComponentPublicInstance | null>(null);
+    const handleClose = (tag: string) => {
+      tags.value.splice(tags.value.indexOf(tag), 1);
+    };
     const showInput = () => {
-      inputVisible.value = true
+      inputVisible.value = true;
       nextTick(() => {
         if (saveTagInput$.value) {
-          (saveTagInput$.value.$refs as any).input$.focus()
+          (saveTagInput$.value.$refs as any).input$.focus();
         }
-      })
-    }
+      });
+    };
     const handleInputConfirm = () => {
-      const value = inputValue.value
+      const value = inputValue.value;
       if (value) {
-        tags.value.push(value)
+        tags.value.push(value);
       }
-      inputVisible.value = false
-      inputValue.value = ""
-    }
+      inputVisible.value = false;
+      inputValue.value = "";
+    };
     const handleScroll = (e: Event) => {
-      console.log("scroll", e)
-    }
+      console.log("scroll", e);
+    };
+    const selectedValue = ref([]);
+    const options = ref([]);
     return {
       saveTagInput$,
       currentTabId,
@@ -128,9 +135,11 @@ export default defineComponent({
       handleClose,
       handleInputConfirm,
       handleScroll,
-    }
+      selectedValue,
+      options,
+    };
   },
-})
+});
 </script>
 
 <style lang="scss">
@@ -175,6 +184,11 @@ export default defineComponent({
     border: 1px solid var(--ccd-color-primary);
     background: var(--ccd-color-white);
     color: var(--ccd-color-primary);
+  }
+  .select-demo {
+    margin-top: 20px;
+    width: 300px;
+    height: 300px;
   }
 }
 </style>

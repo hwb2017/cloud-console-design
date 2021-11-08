@@ -2,3 +2,58 @@
 @use 'sass:map'; 
 
 @import "../../style/index.scss";
+
+.ccd-select {
+  display: inline-block;
+  position: relative;
+  line-height: map.get($--input-height, 'default');
+
+  &__popper {
+    @include popper(
+      map.get($--select-dropdown, 'background'),
+      map.get($--select-dropdown, 'border'),
+      map.get($--select-dropdown, 'shadow'),
+    );
+  }
+
+  &:hover {
+    .ccd-input__inner {
+      border-color: map.get($--select, 'border-color-hover');
+    }
+  }
+
+  .ccd-input__inner {
+    cursor: pointer;
+    padding-right: 35px;
+    display: block;
+
+    &:focus {
+      border-color: map.get($--select, 'input-focus-border-color');
+    }
+  }
+
+  .ccd-input {
+    display: block;
+    &.is-disabled {
+      & .ccd-input__inner {
+        cursor: not-allowed;
+        &:hover {
+          border-color: map.get($--select, 'disabled-border');
+        }
+      }
+    }
+    &.is-focus .ccd-input__inner {
+      border-color: map.get($--select, 'input-focus-border-color');
+    }
+  }
+}
+
+.ccd-select-dropdown {
+  &__empty {
+    padding: map.get($--select-dropdown, 'empty-padding');
+    margin: 0;
+    text-align: center;
+    color: map.get($--select-dropdown, 'empty-color');
+    font-size: map.get($--select, 'font-size');
+  }
+}

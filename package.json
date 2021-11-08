@@ -30,6 +30,7 @@
     "@popperjs/core": "^2.10.2",
     "async-validator": "^4.0.7",
     "lodash-es": "^4.17.21",
+    "vue": "^3.2.6",
     "vue-types": "^4.0.1"
   },
   "devDependencies": {

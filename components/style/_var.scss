@@ -144,3 +144,46 @@ $--scrollbar: map.merge(
   ),
   $--scrollbar
 );
+
+// Box-shadow
+$--box-shadow: () !default;
+$--box-shadow: map.merge(
+  (
+    'base': (
+      0 2px 4px rgba(0, 0, 0, 0.12),
+      0 0 6px rgba(0, 0, 0, 0.04),
+    ),
+    'light': 0 2px 12px 0 rgba(0, 0, 0, 0.1),
+  ),
+  $--box-shadow
+);
+
+// Select
+$--select-dropdown: () !default;
+$--select-dropdown: map.merge(
+  (
+    'background': var(--ccd-color-white),
+    'shadow': var(--ccd-box-shadow-light),
+    'empty-color': var(--ccd-text-color-secondary),
+    'max-height': 274px,
+    'padding': 6px 0,
+    'empty-padding': 10px 0,
+    'border': 1px solid var(--ccd-border-color-light),
+  ),
+  $--select-dropdown
+);
+
+$--select: () !default;
+$--select: map.merge(
+  (
+    'border-color-hover': var(--ccd-border-color-base),
+    'disabled-border': var(--ccd-disabled-border-base),
+    'font-size': var(--ccd-font-size-base),
+    'close-hover-color': var(--ccd-text-color-secondary),
+    'input-color': var(--ccd-text-color-placeholder),
+    'multiple-input-color': var(--ccd-text-color-regular),
+    'input-focus-border-color': var(--ccd-color-primary),
+    'input-font-size': 14px,
+  ),
+  $--select
+);

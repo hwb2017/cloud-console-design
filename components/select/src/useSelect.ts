@@ -24,6 +24,8 @@ export function useSelectStates(props: SelectProps) {
     previousValue: '',
     isComposing: false,
     isSilentBlur: false,
+    softFocus: false,
+    inputHovering: false,
   })
 }
 
@@ -78,6 +80,10 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
       }
     }
   }
+  const readonly = computed(
+    () => !props.filterable || props.isMultiple || !states.visible
+  )
+  const debounce = computed(() => (props.remote ? 300 : 0))
   const dropdownVisible = computed(
     // 如果下拉列表的数据通过远程获取，且未输入查询语句/关键字，则下拉列表也是不可见的
     () => states.visible && emptyText.value !== false
@@ -264,6 +270,44 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
     const _placeholder = props.placeholder || '请选择'
     return props.isMultiple ? _placeholder : states.selectedLabel || _placeholder
   })
+  const handleFocus = (event: Event) => {
+    if (!states.softFocus) {
+      if (props.automaticDropdown || props.filterable) {
+        states.visible = true
+        if (props.filterable) {
+          states.menuVisibleOnFocus = true
+        }
+      }
+    } else {
+      states.softFocus = false
+    }
+  }
+  const blur = () => {
+    states.visible = false
+    ;(reference$.value as any).blur()
+  }
+  const handleClose = () => {
+    states.visible = false
+  }
+  const handleBlur = (event: Event) => {
+    nextTick(() => {
+      if (states.isSilentBlur) {
+        states.isSilentBlur = false
+      } else {
+        ctx.emit('blur', event)
+      }
+    })
+    states.softFocus = false
+  }
+  // const onInputeChange = () => {
+  //   if (props.filterable && states.query !== states.selectedLabel) {
+  //     states.query = states.selectedLabel
+  //     handleQueryChange(states.query)
+  //   }
+  // }
+  // const debouncedOnInputChange = debounce(() => {
+  //   onInputeChange()
+  // }, debounce.value)
 
   watch(
     () => props.modelValue,
@@ -287,5 +331,12 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
     handleDropdownEnter,
     onSelect,
     currentPlaceholder,
+    selectDisabled,
+    readonly,
+    handleFocus,
+    handleBlur,
+    filteredOptions,
+    popperSize,
+    emptyText,
   }
 }

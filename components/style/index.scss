@@ -88,6 +88,9 @@
   @each $type in (default, medium, small, mini) {
     @include set-css-var-type('button-padding-horizontal', $type, $--button-padding-horizontal);
   }
-
+  // --ccd-box-shadow-#{$type}
+  @each $type in (base, light) {
+    @include set-css-var-type('box-shadow', $type, $--box-shadow);
+  }
   --ccd-popover-border-radius: 4px;
 }

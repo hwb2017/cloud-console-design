@@ -7,10 +7,10 @@
     <c-popover
       ref="popper$"
       v-model:visible="dropdownVisible"
-      placement="bottom-start"
+      placement="bottom"
       :append-to-body="popperAppendToBody"
-      :popper-class="`ccd-select_popper ${popperClass}`"
-      :fallback-placements="['bottom-start', 'top-start', 'right', 'left']"
+      :popper-class="`ccd-select__popper ${popperClass}`"
+      :fallback-placements="['bottom', 'top', 'right', 'left']"
       manual-mode
       :effect="Effect.LIGHT"
       pure
@@ -33,14 +33,6 @@
             :class="{ 'is-focus': visible }"
             @focus="handleFocus"
             @blur="handleBlur"
-            @input="debouncedOnInputChange"
-            @compositionstart="handleComposition"
-            @compositionend="handleComposition"
-            @keydown.down.stop.prevent="navigationOptions('next')"
-            @keydown.up.stop.prevent="navigationOptions('prev')"
-            @keydown.enter.stop.prevent="selectOption"
-            @keydown.esc.stop.prevent="visible = false"
-            @keydown.tab="visible = false"
             @mouseenter="inputHovering = true"
             @mouseleave="inputHovering = false"
           >
@@ -53,13 +45,19 @@
           :data="filteredOptions"
           :width="popperSize"
           :hovering-index="hoveringIndex"
-        ></c-select-dropdown>
+        >
+        <template #empty>
+          <slot name="empty">
+            <p class="ccd-select-dropdown__empty"> {{ emptyText }}</p>
+          </slot>
+        </template>
+        </c-select-dropdown>
       </template>
     </c-popover>
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, toRefs } from 'vue'
+import { defineComponent, toRefs } from "vue"
 import { array, bool, integer, object, oneOf, oneOfType, string, number } from 'vue-types'
 import CInput from "../../input"
 import CPopover, { Effect } from "../../popover"
@@ -122,12 +120,22 @@ export default defineComponent({
     const states = useSelectStates(props)
     const {
       selectedLabel,
+      visible,
+      inputHovering,
+      hoveringIndex,
     } = toRefs(states)
     const {
       toggleDropdown,
       dropdownVisible,
       handleDropdownEnter,
       currentPlaceholder,
+      selectDisabled,
+      readonly,
+      handleFocus,
+      handleBlur,
+      filteredOptions,
+      popperSize,
+      emptyText
     } = useSelect(props, states, ctx)
     return {
       Effect,
@@ -136,6 +144,16 @@ export default defineComponent({
       handleDropdownEnter,
       selectedLabel,
       currentPlaceholder,
+      selectDisabled,
+      readonly,
+      visible,
+      handleFocus,
+      handleBlur,
+      inputHovering,
+      filteredOptions,
+      popperSize,
+      hoveringIndex,
+      emptyText
     }
   },
 })

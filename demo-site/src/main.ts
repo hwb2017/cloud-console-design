@@ -10,6 +10,7 @@ import {
   CPopover,
   CTag,
   CScrollbar,
+  CSelect,
 } from "cloud-console-design";
 import "cloud-console-design/dist/style/index.css";
 
@@ -22,5 +23,6 @@ app.use(CInput);
 app.use(CPopover);
 app.use(CTag);
 app.use(CScrollbar);
+app.use(CSelect);
 
 app.use(store).use(router).mount("#app");
