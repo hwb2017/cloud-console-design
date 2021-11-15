@@ -75,7 +75,9 @@
       </p>
     </c-scrollbar>
     <div class="select-demo">
-      <c-select v-model="selectedValue" :options="options"></c-select>
+      <c-select v-model="selectedValue" :options="options">
+        <template #empty><p style="color: black">No Data</p></template>
+      </c-select>
     </div>
   </div>
 </template>
@@ -187,7 +189,7 @@ export default defineComponent({
   }
   .select-demo {
     margin-top: 20px;
-    width: 300px;
+    width: 200px;
     height: 300px;
   }
 }
