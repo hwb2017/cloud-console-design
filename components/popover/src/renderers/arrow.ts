@@ -7,6 +7,7 @@ export default function renderArrow(showArrow: boolean) {
         {
           ref: "arrowRef",
           class: "ccd-popover__arrow",
+          'data-popper-arrow': '',
         }
       )
     : h(Comment, null, '')
