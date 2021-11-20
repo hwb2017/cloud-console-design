@@ -5,6 +5,7 @@ import type { SelectProps, SelectEmits, OptionType, Option } from "./type"
 import type { CFormContext, KeyType } from "../../../utils/types"
 import { isObject, getValueByPath } from "../../../utils/helper"
 import { flattenOptions } from "./utils"
+import type { InputComponentInstance } from "../../input/src/type"
 
 type ModelValue = KeyType<SelectProps, 'modelValue'>
 
@@ -34,7 +35,7 @@ export type States = ReturnType<typeof useSelectStates>
 export function useSelect(props: SelectProps, states: States, ctx: SetupContext<SelectEmits[]>) {
   // template refs
   const selection$ = ref<HTMLDivElement | null>(null)
-  const reference$ = ref<ComponentPublicInstance | null>(null)
+  const reference$ = ref<InputComponentInstance | null>(null)
   const popper$ = ref<ComponentPublicInstance | null>(null)
   const selectWrapper$ = ref<HTMLDivElement | null>(null)
   const dropdown$ = ref<ComponentPublicInstance | null>(null)
@@ -76,7 +77,7 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
         states.visible = !states.visible
       }
       if (states.visible) {
-        (reference$.value as any).focus()
+        reference$.value!.focus()
       }
     }
   }
@@ -224,7 +225,7 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
   const setSoftFocus = () => {
     const _input = reference$.value
     if (_input) {
-      (_input as any).focus()
+      _input.focus()
     }
   }
   // 当选项被点击或者通过键盘上下键选中时触发的回调函数
@@ -284,7 +285,7 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
   }
   const blur = () => {
     states.visible = false
-    ;(reference$.value as any).blur()
+    reference$.value!.blur()
   }
   const handleClose = () => {
     states.visible = false
@@ -326,6 +327,7 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
   })
 
   return {
+    reference$,
     toggleDropdown,
     dropdownVisible,
     handleDropdownEnter,

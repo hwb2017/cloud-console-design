@@ -125,6 +125,7 @@ export default defineComponent({
       hoveringIndex,
     } = toRefs(states)
     const {
+      reference$,
       toggleDropdown,
       dropdownVisible,
       handleDropdownEnter,
@@ -138,6 +139,7 @@ export default defineComponent({
       emptyText
     } = useSelect(props, states, ctx)
     return {
+      reference$,
       Effect,
       toggleDropdown,
       dropdownVisible,
