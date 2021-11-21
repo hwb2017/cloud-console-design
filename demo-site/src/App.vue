@@ -121,8 +121,34 @@ export default defineComponent({
     const handleScroll = (e: Event) => {
       console.log("scroll", e);
     };
-    const selectedValue = ref([]);
-    const options = ref([]);
+    const selectedValue = ref("选项1");
+    const options = ref([
+      {
+        value: "选项1",
+        label: "黄金糕",
+        disabled: false,
+      },
+      {
+        value: "选项2",
+        label: "双皮奶",
+        disabled: false,
+      },
+      {
+        value: "选项3",
+        label: "蚵仔煎",
+        disabled: false,
+      },
+      {
+        value: "选项4",
+        label: "龙须面",
+        disabled: false,
+      },
+      {
+        value: "选项5",
+        label: "北京烤鸭",
+        disabled: false,
+      },
+    ]);
     return {
       saveTagInput$,
       currentTabId,

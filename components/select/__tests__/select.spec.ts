@@ -1,6 +1,8 @@
-import { mount } from "@vue/test-utils"
+import { popper } from "@popperjs/core"
+import { DOMWrapper, mount } from "@vue/test-utils"
+import { HMRRuntime, nextTick, readonly } from "vue"
 import Select from "../src/index.vue"
-import { SelectComponentInstance } from "../src/type"
+import type { SelectComponentInstance, SelectProps, OptionType } from "../src/type"
 
 // 预置待测组件 Select
 const _mount = (template: string, data: any = () => ({}), otherObj?: any) =>
@@ -18,19 +20,249 @@ const _mount = (template: string, data: any = () => ({}), otherObj?: any) =>
     }
   )
 
+// 提取出一个常用的、可配置的待测组件用例
+const getSelectVm = (configs: Partial<SelectProps> = {}, options?: OptionType[]) => {
+  [
+    'isMultiple',
+    'clearable',
+    'filterable',
+    'allowCreate',
+    'remote',
+    'collapseTags',
+    'automaticDropdown',
+  ].forEach((config) => {
+    configs[config] = configs[config] || false
+  })
+  configs.multipleLimit = configs.multipleLimit || 0
+  if (!options) {
+    options = [
+      {
+        value: '选项1',
+        label: '黄金糕',
+        disabled: false,
+      },
+      {
+        value: '选项2',
+        label: '双皮奶',
+        disabled: false,
+      },
+      {
+        value: '选项3',
+        label: '蚵仔煎',
+        disabled: false,
+      },
+      {
+        value: '选项4',
+        label: '龙须面',
+        disabled: false,
+      },
+      {
+        value: '选项5',
+        label: '北京烤鸭',
+        disabled: false,
+      },
+    ]
+  }
+  return _mount(
+    `
+    <c-select
+      ref="select"
+      :options="options"
+      v-model="value"
+      :is-multipe="isMultiple"
+      :multiple-limit="multipleLimit"
+      :popper-class="popperClass"
+      :clearable="clearable"  
+      :filterable="filterable"
+      :collapse-tags="collapseTags"
+      :allow-create="allowCreate"   
+      :remote="remote"
+      :loading="loading"
+      :automatic-dropdown="automaticDropdown"
+    >
+    </c-select>
+    `,
+    () => ({
+      options,
+      isMultiple: configs.isMultiple,
+      multipleLimit: configs.multipleLimit,
+      clearable: configs.clearable,
+      filterable: configs.filterable,
+      collapseTags: configs.collapseTags,
+      allowCreate: configs.allowCreate,
+      popperClass: configs.popperClass,
+      automaticDropdown: configs.automaticDropdown,
+      loading: false,
+      remote: configs.remote,
+      value: configs.isMultiple ? [] : '',
+    })
+  )
+}
+
+// 获取 append 到 body 上的下拉列表选项
+const getOptions = () => {
+  return Array.from<HTMLElement>(
+    document.querySelectorAll('.ccd-select-dropdown__item')
+  )
+}
+
 describe('Select', () => {
   afterEach(() => {
     document.body.innerHTML = ''
   })
 
-  test('create', () => {
+  test('create', async () => {
     const wrapper = _mount(`<c-select v-model="value"></c-select>`, () => ({
       value: '',
     }))
     expect(wrapper.classes()).toContain('ccd-select')
     expect(wrapper.find<HTMLInputElement>('.ccd-input__inner').element.placeholder).toBe('Please select')
     const select = wrapper.findComponent({ name: "CSelect"})
-    wrapper.trigger('click')
+    await wrapper.trigger('click')
     expect((select.vm as SelectComponentInstance).visible).toBe(true)
   })
+
+  test('render slot `empty`', async() => {
+    const wrapper = _mount(
+      `
+      <c-select v-model="value">
+        <template #empty>
+          <div class="empty-slot">EmptySlot</div>
+        </template>
+      </c-select>
+      `,
+      () => ({
+        value: '',
+      })
+    )
+    await wrapper.findComponent({ name: "CSelect"}).trigger('click')
+    expect(document.querySelector('.empty-slot')?.textContent).toBe('EmptySlot')
+  })
+
+  test('options rendered correctly', async () => {
+    const wrapper = getSelectVm()
+    const options = getOptions()
+    expect(options.length).toBe(5)
+
+    const vm = wrapper.vm as SelectComponentInstance
+    // options的类型是类数组的nodelist, 使用 Array.prototype.every.call 来调用数组方法, 或者通过 Array.from 转换
+    const result = options.every((option, index) => {
+      const text = option.textContent
+      return text === vm.options[index].label
+    })
+    expect(result).toBeTruthy()
+  })  
+
+  test('custom dropdown class', () => {
+    getSelectVm({ popperClass: 'custom-dropdown' })
+    const popper = document.querySelector('.ccd-select__popper')
+    if (popper !== undefined && popper !== null) {
+      expect(popper.classList).toContain('custom-dropdown')
+    }
+  })
+
+  test('default value', async() => {
+    const wrapper = _mount(
+      `<c-select v-model="value" :options="options"></c-select>`,
+      () => ({
+        options: [
+          {
+            value: '选项1',
+            label: '黄金糕',
+          },
+          {
+            value: '选项2',
+            label: '双皮奶',
+          },
+        ],
+        value: '选项2',
+      })
+    )
+    await nextTick()
+    expect(wrapper.find<HTMLInputElement>('.ccd-input__inner').element.value).toBe('双皮奶')
+  })
+
+  test('sync set value and options', async() => {
+    const wrapper = _mount(
+      `<c-select v-model="value" :options="options"></c-select>`,
+      () => ({
+        options: [
+          {
+            value: '选项1',
+            label: '黄金糕',
+          },
+          {
+            value: '选项2',
+            label: '双皮奶',
+          },
+        ],
+        value: '选项2',
+      })
+    )
+    const vm = wrapper.vm
+    vm.options = [
+      {
+        value: '选项1',
+        label: '黄金糕',
+      },
+    ]
+    vm.value = '选项1'
+    await nextTick()
+    expect(wrapper.find<HTMLInputElement>('.ccd-input__inner').element.value).toBe('黄金糕')
+  })  
+
+  // test('single select', async () => {
+  //   const wrapper = _mount(
+  //     `<c-select v-model="value" :options="options" @change="handleChange"></c-select>`,
+  //     () => ({
+  //       options: [
+  //         {
+  //           value: '选项1',
+  //           label: '黄金糕',
+  //         },
+  //         {
+  //           value: '选项2',
+  //           label: '双皮奶',
+  //         },
+  //         {
+  //           value: '选项3',
+  //           label: '蚵仔煎',
+  //         },
+  //         {
+  //           value: '选项4',
+  //           label: '龙须面',
+  //         },
+  //         {
+  //           value: '选项5',
+  //           label: '北京烤鸭',
+  //         },
+  //       ],
+  //       value: '',
+  //       count: 0,
+  //     }),
+  //     {
+  //       methods: {
+  //         handleChange() {
+  //           (this as any).count++
+  //         }
+  //       },
+  //     }
+  //   )
+  //   await wrapper.findComponent({ name: "CSelect" }).trigger('click')
+  //   const dropdown = wrapper.findComponent({name: "CSelectDropdown"})
+  //   console.log(dropdown.html())
+  //   const options = getOptions()
+  //   const input = wrapper.find<HTMLInputElement>('.ccd-input__inner').element
+  //   const vm = wrapper.vm
+  //   expect(vm.value).toBe('')
+  //   expect(input.value).toBe('')
+  //   options[2].click()
+  //   await nextTick()
+  //   dropdown.find('div > li:last-child').trigger('click')
+  //   await nextTick()
+  //   console.log(document.body.innerHTML)
+  //   expect(vm.value).toBe('选项3')
+  //   expect(input.value).toBe('蚵仔煎')
+  //   expect(vm.count).toBe('1')
+  // })
 })

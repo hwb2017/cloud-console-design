@@ -26,25 +26,17 @@ export interface QueryChangeCtx {
 }
 
 export interface SelectContext {
-  props: {
-    multiple?: boolean
-    multipleLimit?: number
-    valueKey?: string
-    modelValue?: string | number | unknown | unknown[]
-    popperClass?: string
-    remote?: boolean
-  }
-  queryChange: Ref<QueryChangeCtx>
-  groupQueryChange: Ref<string>
-  selectWrapper: HTMLElement
-  cachedOptions: Map<any, any>
-  hoverIndex: number
-  optionsCount: number
-  filteredOptionsCount: number
-  options: Map<any, any>
-  optionsArray: any[]
-  selected: any | any[]
-  setSelected(): void
+  isMultiple?: boolean
+  queryChange?: Ref<QueryChangeCtx>
+  groupQueryChange?: Ref<string>
+  selectWrapper?: HTMLElement
+  cachedOptions?: Map<any, any>
+  hoverIndex?: number
+  optionsCount?: number
+  filteredOptionsCount?: number
+  options: OptionType[]
+  selected?: any | any[]
+  setSelected: (value: any) => void
 }
 
 export interface SelectProps {
@@ -56,7 +48,6 @@ export interface SelectProps {
   recoveryText: string,
   placeholder: string,
   options: OptionType[],
-  selectedOptions: OptionType[],
   statusType: string,
   keepOpen: boolean,
   clearable: boolean,

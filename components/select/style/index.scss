@@ -56,4 +56,22 @@
     color: map.get($--select-dropdown, 'empty-color');
     font-size: map.get($--select, 'font-size');
   }
+
+  &__item {
+    background: var(--ccd-color-white);
+    color: var(--ccd-text-color-primary);
+    text-align: left;
+    padding: map.get($--select-dropdown, 'padding');
+    font-size: map.get($--select, 'font-size');
+    list-style: none;
+    cursor: pointer;
+    &:hover {
+      background: var(--ccd-background-color-base);
+      color: var(--ccd-color-primary); 
+    }
+    &.is-disabled {
+      cursor: not-allowed;
+      color: var(--ccd-text-color-secondary);
+    }
+  }
 }

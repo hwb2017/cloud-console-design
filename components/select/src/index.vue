@@ -57,13 +57,13 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, toRefs } from "vue"
+import { defineComponent, toRefs, provide } from "vue"
 import { array, bool, integer, object, oneOf, oneOfType, string, number } from 'vue-types'
 import CInput from "../../input"
 import CPopover, { Effect } from "../../popover"
 // import CTag from "../../tag"
 import CSelectDropdown from "./select-dropdown.vue"
-import type { OptionType, SelectProps } from "./type"
+import type { OptionType, SelectProps, SelectContext } from "./type"
 import { useSelectStates, useSelect } from "./useSelect"
 
 const selectProps = {
@@ -79,7 +79,6 @@ const selectProps = {
   recoveryText: string().def('Try again'),
   placeholder: string().def('Please select'),
   options: array<OptionType>().def([]),
-  selectedOptions: array<OptionType>().def([]),
   statusType: oneOf(['pending', 'loading', 'finished', 'error']).def('finished'),
   keepOpen: bool().def(false),
   clearable: bool().def(false),
@@ -116,7 +115,6 @@ export default defineComponent({
     'visible-change',
   ],
   setup(props: SelectProps, ctx) {
-    props.options
     const states = useSelectStates(props)
     const {
       selectedLabel,
@@ -138,6 +136,15 @@ export default defineComponent({
       popperSize,
       emptyText
     } = useSelect(props, states, ctx)
+
+    provide<SelectContext>("CSelect", {
+      isMultiple: props.isMultiple,
+      options: props.options,
+      setSelected: (value: any) => {
+        ctx.emit('update:modelValue', value)
+      }
+    })
+
     return {
       reference$,
       Effect,
