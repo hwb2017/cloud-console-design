@@ -196,7 +196,7 @@ export default defineComponent({
       nextTick(setStateValue)
     }
 
-    watch(() => stateValue, () => {
+    watch(() => stateValue.value, () => {
       setStateValue()
     })
     
