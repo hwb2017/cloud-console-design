@@ -134,15 +134,14 @@ export default defineComponent({
       handleBlur,
       filteredOptions,
       popperSize,
-      emptyText
+      emptyText,
+      onSelect,
     } = useSelect(props, states, ctx)
 
     provide<SelectContext>("CSelect", {
       isMultiple: props.isMultiple,
       options: props.options,
-      setSelected: (value: any) => {
-        ctx.emit('update:modelValue', value)
-      }
+      onSelect,
     })
 
     return {

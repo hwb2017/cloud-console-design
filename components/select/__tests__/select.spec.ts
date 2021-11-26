@@ -1,6 +1,5 @@
-import { popper } from "@popperjs/core"
-import { DOMWrapper, mount } from "@vue/test-utils"
-import { HMRRuntime, nextTick, readonly } from "vue"
+import { mount } from "@vue/test-utils"
+import { nextTick } from "vue"
 import Select from "../src/index.vue"
 import type { SelectComponentInstance, SelectProps, OptionType } from "../src/type"
 
@@ -211,58 +210,56 @@ describe('Select', () => {
     expect(wrapper.find<HTMLInputElement>('.ccd-input__inner').element.value).toBe('黄金糕')
   })  
 
-  // test('single select', async () => {
-  //   const wrapper = _mount(
-  //     `<c-select v-model="value" :options="options" @change="handleChange"></c-select>`,
-  //     () => ({
-  //       options: [
-  //         {
-  //           value: '选项1',
-  //           label: '黄金糕',
-  //         },
-  //         {
-  //           value: '选项2',
-  //           label: '双皮奶',
-  //         },
-  //         {
-  //           value: '选项3',
-  //           label: '蚵仔煎',
-  //         },
-  //         {
-  //           value: '选项4',
-  //           label: '龙须面',
-  //         },
-  //         {
-  //           value: '选项5',
-  //           label: '北京烤鸭',
-  //         },
-  //       ],
-  //       value: '',
-  //       count: 0,
-  //     }),
-  //     {
-  //       methods: {
-  //         handleChange() {
-  //           (this as any).count++
-  //         }
-  //       },
-  //     }
-  //   )
-  //   await wrapper.findComponent({ name: "CSelect" }).trigger('click')
-  //   const dropdown = wrapper.findComponent({name: "CSelectDropdown"})
-  //   console.log(dropdown.html())
-  //   const options = getOptions()
-  //   const input = wrapper.find<HTMLInputElement>('.ccd-input__inner').element
-  //   const vm = wrapper.vm
-  //   expect(vm.value).toBe('')
-  //   expect(input.value).toBe('')
-  //   options[2].click()
-  //   await nextTick()
-  //   dropdown.find('div > li:last-child').trigger('click')
-  //   await nextTick()
-  //   console.log(document.body.innerHTML)
-  //   expect(vm.value).toBe('选项3')
-  //   expect(input.value).toBe('蚵仔煎')
-  //   expect(vm.count).toBe('1')
-  // })
+  test('single select', async () => {
+    const handleChange = jest.fn()
+    const wrapper = _mount(
+      `<c-select v-model="value" :options="options" @change="handleChange"></c-select>`,
+      () => ({
+        options: [
+          {
+            value: '选项1',
+            label: '黄金糕',
+          },
+          {
+            value: '选项2',
+            label: '双皮奶',
+          },
+          {
+            value: '选项3',
+            label: '蚵仔煎',
+          },
+          {
+            value: '选项4',
+            label: '龙须面',
+          },
+          {
+            value: '选项5',
+            label: '北京烤鸭',
+          },
+        ],
+        value: '',
+      }),
+      {
+        methods: {
+          handleChange,
+        },
+      }
+    )
+    await wrapper.findComponent({ name: "CSelect" }).trigger('click')
+    const options = getOptions()
+    const input = wrapper.find<HTMLInputElement>('.ccd-input__inner').element
+    const vm = wrapper.vm
+    expect(vm.value).toBe('')
+    expect(input.value).toBe('')
+    options[2].click()
+    await nextTick()
+    expect(handleChange).toHaveBeenCalledTimes(1)
+    expect(vm.value).toBe('选项3')
+    expect(input.value).toBe('蚵仔煎')
+    options[4].click()
+    await nextTick()
+    expect(handleChange).toHaveBeenCalledTimes(2)
+    expect(vm.value).toBe('选项5')
+    expect(input.value).toBe('北京烤鸭')
+  })
 })

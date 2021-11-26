@@ -229,7 +229,8 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
     }
   }
   // 当选项被点击或者通过键盘上下键选中时触发的回调函数
-  const onSelect = (option: Option, idx: number, byClick = true) => {
+  const onSelect = (option: OptionType, byClick = true) => {
+    const idx = props.options.findIndex((item) => item.value === option.value)
     if (props.isMultiple) {
       if (Array.isArray(props.modelValue)) {
         const selectedOptions = props.modelValue.slice()

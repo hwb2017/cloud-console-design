@@ -75,7 +75,11 @@
       </p>
     </c-scrollbar>
     <div class="select-demo">
-      <c-select v-model="selectedValue" :options="options">
+      <c-select
+        v-model="selectedValue"
+        :options="options"
+        @change="handleSelectChange"
+      >
         <template #empty><p style="color: black">No Data</p></template>
       </c-select>
     </div>
@@ -121,6 +125,9 @@ export default defineComponent({
     const handleScroll = (e: Event) => {
       console.log("scroll", e);
     };
+    const handleSelectChange = () => {
+      console.log("change");
+    };
     const selectedValue = ref("选项1");
     const options = ref([
       {
@@ -165,6 +172,7 @@ export default defineComponent({
       handleScroll,
       selectedValue,
       options,
+      handleSelectChange,
     };
   },
 });

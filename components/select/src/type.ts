@@ -36,7 +36,7 @@ export interface SelectContext {
   filteredOptionsCount?: number
   options: OptionType[]
   selected?: any | any[]
-  setSelected: (value: any) => void
+  onSelect: (option: OptionType, byClick?: boolean) => void
 }
 
 export interface SelectProps {

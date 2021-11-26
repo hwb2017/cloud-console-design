@@ -9,4 +9,5 @@ module.exports = {
     "^.+\\.vue$": "vue-jest",
   },
   roots: ['<rootDir>'],
+  setupFiles: ['./jest.setup.js'],
 };
