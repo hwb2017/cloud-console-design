@@ -138,7 +138,7 @@ export default defineComponent({
       {
         value: "选项2",
         label: "双皮奶",
-        disabled: false,
+        disabled: true,
       },
       {
         value: "选项3",

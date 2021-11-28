@@ -262,4 +262,21 @@ describe('Select', () => {
     expect(vm.value).toBe('选项5')
     expect(input.value).toBe('北京烤鸭')
   })
+
+  test('disabled option', async() => {
+    const wrapper = getSelectVm()
+    const vm = wrapper.vm as SelectComponentInstance
+    vm.options[1].disabled = true
+    await wrapper.findComponent({ name: "CSelect" }).trigger('click')
+    const options = getOptions()
+    expect(options[1].className).toContain('is-disabled')
+    options[1].click()
+    await nextTick()
+    expect((vm as any).value).toBe('')
+  })
+
+  test('disabled select', () => {
+    const wrapper = _mount('<c-select disabled></c-select>')
+    expect(wrapper.find('.ccd-input').classes()).toContain('is-disabled')
+  })  
 })

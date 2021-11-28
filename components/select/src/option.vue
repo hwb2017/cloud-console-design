@@ -25,6 +25,7 @@ export default defineComponent({
   setup(props) {
     const select = inject<SelectContext>("CSelect", {} as SelectContext)
     const handleOptionClick = () => {
+      if (props.disabled) return
       const option: OptionType = {
         value: props.value,
         label: props.label,
