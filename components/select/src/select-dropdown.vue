@@ -34,13 +34,14 @@ export default defineComponent({
         $slots.empty?.()
       )
     }
-    const options = data.map(option => {
+    const options = data.map((option, index) => {
       return h(
         COption,
         { 
           label: option.label,
           disabled: option.disabled,
-          value: option.value
+          value: option.value,
+          'data-index': index,
         }
       )
     })

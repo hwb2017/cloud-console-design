@@ -79,6 +79,7 @@
         v-model="selectedValue"
         :options="options"
         @change="handleSelectChange"
+        clearable
       >
         <template #empty><p style="color: black">No Data</p></template>
       </c-select>

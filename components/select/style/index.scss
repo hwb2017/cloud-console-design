@@ -45,10 +45,16 @@
     &.is-focus .ccd-input__inner {
       border-color: map.get($--select, 'input-focus-border-color');
     }
+    .ccd-input__suffix-inner {
+      .is-reverse {
+        transform: rotateZ(180deg);
+      }
+    }
   }
 }
 
 .ccd-select-dropdown {
+  margin: 8px 0;
   &__empty {
     padding: map.get($--select-dropdown, 'empty-padding');
     margin: 0;
@@ -65,10 +71,12 @@
     font-size: map.get($--select, 'font-size');
     list-style: none;
     cursor: pointer;
-    &:hover {
+    &.is-hover {
       background: var(--ccd-background-color-base);
-      color: var(--ccd-color-primary); 
     }
+    &.is-selected {
+      color: var(--ccd-color-primary); 
+    }    
     &.is-disabled {
       cursor: not-allowed;
       color: var(--ccd-text-color-secondary);

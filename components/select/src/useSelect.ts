@@ -42,8 +42,6 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
 
   // 弹出框的宽度
   const popperSize = ref(-1)
-  // 单选时的选项索引值
-  const selectedIndex = ref(-1)
   const cForm = inject<CFormContext>('CForm', {} as CFormContext)
   
   const selectDisabled = computed(() => props.disabled || cForm.disabled)
@@ -81,6 +79,17 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
       }
     }
   }
+  const showClose = computed(() => {
+    return props.modelValue !== '' && 
+      states.inputHovering &&
+      props.clearable
+  })
+  const suffixIconClass = computed(() => {
+    return `ccd-icon-${props.suffixIconName}`
+  })
+  const suffixIconReverse = computed(() => {
+    return states.visible ? 'is-reverse' : ''
+  })
   const readonly = computed(
     () => !props.filterable || props.isMultiple || !states.visible
   )
@@ -119,7 +128,7 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
     return flattenOptions(targetOption)
   })
   // 返回当前选中的元素在下拉列表中对应的索引，当选中多个时显示最后一个选中元素对应的索引
-  const indexRef = computed<number>(() => {
+  const selectedIndex = computed<number>(() => {
     if (props.isMultiple) {
       if (Array.isArray(props.modelValue)) {
         const len = props.modelValue.length
@@ -138,20 +147,14 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
     }
     return -1
   })
+  const handleClear = () => {
+    ctx.emit('update:modelValue', '')
+  }
   const updateHoveringIndex = (idx: number) => {
     states.hoveringIndex = idx
   }
   const resetHoverIndex = () => {
     states.hoveringIndex = -1
-  }
-  const handleDropdownEnter = () => {
-    nextTick(() => {
-      // 因为设置 hoveringIndex 为 -1 时表示没有悬浮在任意 option 上，所以对 hoverIndex 按位取反时只有 -1 为 false
-      if (~indexRef.value) {
-        updateHoveringIndex(indexRef.value)
-        // scrollToItem(states.hoveringIndex)
-      }
-    })
   }
   // 保持弹出框的宽度与选择器的宽度一致
   const calculatePopperSize = () => {
@@ -256,7 +259,6 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
         setSoftFocus()
       }
     } else {
-      selectedIndex.value = idx
       states.selectedLabel = option.label
       update(option.value)
       states.isComposing = false
@@ -331,7 +333,6 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
     reference$,
     toggleDropdown,
     dropdownVisible,
-    handleDropdownEnter,
     onSelect,
     currentPlaceholder,
     selectDisabled,
@@ -341,5 +342,10 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
     filteredOptions,
     popperSize,
     emptyText,
+    showClose,
+    handleClear,
+    suffixIconClass,
+    suffixIconReverse,
+    selectedIndex,
   }
 }

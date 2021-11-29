@@ -18,7 +18,6 @@
       transition="ccd-zoom-in-top"
       :stop-popper-mouse-event="false"
       :gpu-acceleration="false"
-      @before-enter="handleDropdownEnter"
     >
       <template #trigger>
         <div class="select-trigger" ref="selection$">
@@ -36,6 +35,20 @@
             @mouseenter="inputHovering = true"
             @mouseleave="inputHovering = false"
           >
+            <template #suffix>
+              <i
+                v-if="suffixIconName"
+                v-show="!showClose"
+                :class="[suffixIconClass, suffixIconReverse]"
+              >
+              </i>
+              <i 
+                v-if="showClose" 
+                class="ccd-icon-cancel-circle ccd-input__clear"
+                @click="handleClear"
+              >
+              </i>
+            </template>
           </c-input>
         </div>
       </template>
@@ -96,6 +109,7 @@ const selectProps = {
   noMatchText: string().def(""),
   noDataText: string().def(""),
   valueKey: string().def("value"),
+  suffixIconName: string().def("circle-down"),
 }
 
 export default defineComponent({
@@ -126,7 +140,6 @@ export default defineComponent({
       reference$,
       toggleDropdown,
       dropdownVisible,
-      handleDropdownEnter,
       currentPlaceholder,
       selectDisabled,
       readonly,
@@ -136,12 +149,19 @@ export default defineComponent({
       popperSize,
       emptyText,
       onSelect,
+      showClose,
+      handleClear,
+      suffixIconClass,
+      suffixIconReverse,
+      selectedIndex,
     } = useSelect(props, states, ctx)
 
     provide<SelectContext>("CSelect", {
       isMultiple: props.isMultiple,
       options: props.options,
       onSelect,
+      hoverIndex: hoveringIndex,
+      selectedIndex: selectedIndex
     })
 
     return {
@@ -149,7 +169,6 @@ export default defineComponent({
       Effect,
       toggleDropdown,
       dropdownVisible,
-      handleDropdownEnter,
       selectedLabel,
       currentPlaceholder,
       selectDisabled,
@@ -161,7 +180,11 @@ export default defineComponent({
       filteredOptions,
       popperSize,
       hoveringIndex,
-      emptyText
+      emptyText,
+      showClose,
+      handleClear,
+      suffixIconClass,
+      suffixIconReverse,
     }
   },
 })

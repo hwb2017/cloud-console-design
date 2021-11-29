@@ -1,4 +1,4 @@
-import type { Ref } from "vue"
+import type { Ref, ComputedRef } from "vue"
 import Select from "./index.vue"
 
 export type SelectComponentInstance = InstanceType<typeof Select>
@@ -31,7 +31,8 @@ export interface SelectContext {
   groupQueryChange?: Ref<string>
   selectWrapper?: HTMLElement
   cachedOptions?: Map<any, any>
-  hoverIndex?: number
+  hoverIndex: Ref<number>
+  selectedIndex: ComputedRef<number>
   optionsCount?: number
   filteredOptionsCount?: number
   options: OptionType[]
@@ -65,6 +66,7 @@ export interface SelectProps {
   noMatchText: string,
   noDataText: string,
   valueKey: string,
+  suffixIconName: string,
 }
 
 export type SelectEmits = 'update:modelValue' | 'change' | 'focus' | 'blur' | 'visible-change'

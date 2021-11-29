@@ -278,5 +278,21 @@ describe('Select', () => {
   test('disabled select', () => {
     const wrapper = _mount('<c-select disabled></c-select>')
     expect(wrapper.find('.ccd-input').classes()).toContain('is-disabled')
-  })  
+  })
+  
+  test('clearable', async() => {
+    const wrapper = getSelectVm({ clearable: true })
+    const select = wrapper.findComponent({ name: 'CSelect' })
+    const vm = wrapper.vm as any
+    const selectVm = select.vm as SelectComponentInstance
+    vm.value = '选项1'
+    await nextTick()
+    selectVm.inputHovering = true
+    await nextTick()
+    const iconClear = wrapper.find('.ccd-input__clear')
+    expect(iconClear.exists()).toBeTruthy()
+    await iconClear.trigger('click')
+    expect(vm.value).toBe('')
+  })
+  
 })
