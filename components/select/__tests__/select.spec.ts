@@ -78,6 +78,7 @@ const getSelectVm = (configs: Partial<SelectProps> = {}, options?: OptionType[])
       :remote="remote"
       :loading="loading"
       :automatic-dropdown="automaticDropdown"
+      :default-first-option="defaultFirstOption"
     >
     </c-select>
     `,
@@ -94,6 +95,7 @@ const getSelectVm = (configs: Partial<SelectProps> = {}, options?: OptionType[])
       loading: false,
       remote: configs.remote,
       value: configs.isMultiple ? [] : '',
+      defaultFirstOption: configs.defaultFirstOption,
     })
   )
 }
@@ -295,4 +297,75 @@ describe('Select', () => {
     expect(vm.value).toBe('')
   })
   
+  test('keyboard operations', async() => {
+    const wrapper = getSelectVm()
+    const select = wrapper.findComponent({ name: 'CSelect' })
+    const vm = select.vm as SelectComponentInstance
+    let i = 8
+    while(i--) {
+      vm.navigateOptions('next')
+    }
+    vm.navigateOptions('prev')
+    vm.navigateOptions('prev')
+    vm.navigateOptions('prev')
+    await nextTick()
+    expect(vm.hoveringIndex).toBe(4)
+    vm.selectHoveringOption()
+    await nextTick()
+    expect((wrapper.vm as any).value).toBe('选项5')
+    vm.toggleDropdown()
+    await nextTick()
+    vm.toggleDropdown()
+    await nextTick()
+    expect(vm.hoveringIndex).toBe(4)
+  })
+
+  test('check default first option', async() => {
+    const wrapper = getSelectVm({
+      defaultFirstOption: true
+    })
+    const select = wrapper.findComponent({ name: 'CSelect' })
+    const selectVm = select.vm as SelectComponentInstance
+    await select.trigger('click')
+
+    expect(selectVm.hoveringIndex).toBe(0)
+    selectVm.navigateOptions('next')
+    expect(selectVm.hoveringIndex).toBe(1)
+  })
+
+  test('check default first option when the very first option is disabled', async () => {
+    const demoOptions = [
+      {
+        value: 'HTML',
+        label: 'HTML',
+        disabled: true,
+      },
+      {
+        value: 'CSS',
+        label: 'CSS',
+        disabled: false,
+      },
+      {
+        value: 'JavaScript',
+        label: 'JavaScript',
+        disabled: false,
+      },
+    ]
+    const wrapper = getSelectVm(
+      {
+        defaultFirstOption: true,
+      },
+      demoOptions
+    )
+    const select = wrapper.findComponent({ name: 'CSelect' })
+    const selectVm = select.vm as SelectComponentInstance
+    await select.trigger('click')
+
+    expect(selectVm.hoveringIndex).toBe(1)
+    selectVm.navigateOptions('next')
+    expect(selectVm.hoveringIndex).toBe(2)
+    selectVm.navigateOptions('next')
+    expect(selectVm.hoveringIndex).toBe(1)
+  })
+
 })

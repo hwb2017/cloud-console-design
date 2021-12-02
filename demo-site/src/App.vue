@@ -80,6 +80,7 @@
         :options="options"
         @change="handleSelectChange"
         clearable
+        default-first-option
       >
         <template #empty><p style="color: black">No Data</p></template>
       </c-select>
@@ -129,7 +130,7 @@ export default defineComponent({
     const handleSelectChange = () => {
       console.log("change");
     };
-    const selectedValue = ref("选项1");
+    const selectedValue = ref("");
     const options = ref([
       {
         value: "选项1",
@@ -139,7 +140,7 @@ export default defineComponent({
       {
         value: "选项2",
         label: "双皮奶",
-        disabled: true,
+        disabled: false,
       },
       {
         value: "选项3",

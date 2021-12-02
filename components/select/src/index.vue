@@ -34,6 +34,10 @@
             @blur="handleBlur"
             @mouseenter="inputHovering = true"
             @mouseleave="inputHovering = false"
+            @keydown.up.stop.prevent="navigateOptions('prev')"
+            @keydown.down.stop.prevent="navigateOptions('next')"
+            @keydown.enter.stop.prevent="selectHoveringOption"
+            @keydown.esc.stop.prevent="visible = false"
           >
             <template #suffix>
               <i
@@ -110,6 +114,7 @@ const selectProps = {
   noDataText: string().def(""),
   valueKey: string().def("value"),
   suffixIconName: string().def("circle-down"),
+  defaultFirstOption: bool().def(false),
 }
 
 export default defineComponent({
@@ -154,6 +159,7 @@ export default defineComponent({
       suffixIconClass,
       suffixIconReverse,
       selectedIndex,
+      navigateOptions,
     } = useSelect(props, states, ctx)
 
     provide<SelectContext>("CSelect", {
@@ -163,6 +169,11 @@ export default defineComponent({
       hoverIndex: hoveringIndex,
       selectedIndex: selectedIndex
     })
+
+    const selectHoveringOption = () => {
+      const hoveringOption = props.options[hoveringIndex.value]
+      onSelect(hoveringOption, false)
+    }
 
     return {
       reference$,
@@ -185,6 +196,8 @@ export default defineComponent({
       handleClear,
       suffixIconClass,
       suffixIconReverse,
+      navigateOptions,
+      selectHoveringOption,
     }
   },
 })

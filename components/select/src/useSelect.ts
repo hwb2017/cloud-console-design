@@ -181,6 +181,13 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
               initHovering = true
             }
           })
+        } else {
+          if (props.defaultFirstOption) {
+            const firstAvailableOptionIdx = props.options.findIndex(o => {
+              return o.disabled === undefined || o.disabled === false
+            })
+            updateHoveringIndex(firstAvailableOptionIdx)
+          }
         }
       }
     } else {
@@ -197,6 +204,12 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
         }
       } else {
         states.selectedLabel = ''
+        if (props.defaultFirstOption) {
+          const firstAvailableOptionIdx = props.options.findIndex(o => {
+            return o.disabled === undefined || o.disabled === false
+          })
+          updateHoveringIndex(firstAvailableOptionIdx)
+        }
       }
     }
     calculatePopperSize()
@@ -268,6 +281,22 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
       //   clearAllNewOption()
       // }
       updateHoveringIndex(idx)
+    }
+  }
+  const navigateOptions = (direction: 'prev' | 'next') => {
+    const currentHoverOptionIdx = states.hoveringIndex
+    const step = direction === 'next' ? 1 : -1
+    const len = props.options.length
+    let nextHoverOptionIdx = (currentHoverOptionIdx + step + len) % len
+    let nextHoverOption = props.options[nextHoverOptionIdx]
+    while (nextHoverOptionIdx !== currentHoverOptionIdx) {
+      if (nextHoverOption.disabled) {
+        nextHoverOptionIdx = (nextHoverOptionIdx + step) % len
+        nextHoverOption = props.options[nextHoverOptionIdx]
+      } else {
+        updateHoveringIndex(nextHoverOptionIdx)
+        break
+      }
     }
   }
   const currentPlaceholder = computed(() => {
@@ -347,5 +376,6 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
     suffixIconClass,
     suffixIconReverse,
     selectedIndex,
+    navigateOptions,
   }
 }

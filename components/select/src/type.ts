@@ -67,6 +67,7 @@ export interface SelectProps {
   noDataText: string,
   valueKey: string,
   suffixIconName: string,
+  defaultFirstOption: boolean
 }
 
 export type SelectEmits = 'update:modelValue' | 'change' | 'focus' | 'blur' | 'visible-change'
