@@ -38,6 +38,7 @@
             @keydown.down.stop.prevent="navigateOptions('next')"
             @keydown.enter.stop.prevent="selectHoveringOption"
             @keydown.esc.stop.prevent="visible = false"
+            @input="debouncedOnInputChange"
           >
             <template #suffix>
               <i
@@ -160,6 +161,7 @@ export default defineComponent({
       suffixIconReverse,
       selectedIndex,
       navigateOptions,
+      debouncedOnInputChange,
     } = useSelect(props, states, ctx)
 
     provide<SelectContext>("CSelect", {
@@ -171,7 +173,7 @@ export default defineComponent({
     })
 
     const selectHoveringOption = () => {
-      const hoveringOption = props.options[hoveringIndex.value]
+      const hoveringOption = filteredOptions.value[hoveringIndex.value]
       onSelect(hoveringOption, false)
     }
 
@@ -198,6 +200,7 @@ export default defineComponent({
       suffixIconReverse,
       navigateOptions,
       selectHoveringOption,
+      debouncedOnInputChange
     }
   },
 })

@@ -1,6 +1,6 @@
 import { reactive, computed, inject, ref, nextTick, watch, onMounted } from "vue"
 import type { SetupContext, ComponentPublicInstance } from "vue"
-import { isEqual } from "lodash-es"
+import { isEqual, debounce } from "lodash-es"
 import type { SelectProps, SelectEmits, OptionType, Option } from "./type"
 import type { CFormContext, KeyType } from "../../../utils/types"
 import { isObject, getValueByPath } from "../../../utils/helper"
@@ -15,9 +15,6 @@ export function useSelectStates(props: SelectProps) {
     visible: false,
     // filterable 开启时，query用于存储模糊匹配的关键字
     query: '',
-    options: new Map(),
-    optionsCount: 0,
-    filteredOptionsCount: 0,
     cachedOptions: [] as Option[],
     createdOptions: [] as Option[],
     selectedLabel: '',
@@ -49,18 +46,18 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
     if (props.loading) {
       return props.loadingText || "加载中"
     } else {
-      if (props.remote && states.query === '' && states.options.size === 0) {
+      if (props.remote && states.query === '' && props.options.length === 0) {
         return false
       }
       if (
         props.filterable &&
         states.query &&
-        states.options.size > 0 &&
-        states.filteredOptionsCount === 0
+        props.options.length > 0 &&
+        filteredOptions.value.length === 0
       ) {
         return props.noMatchText || "无匹配数据"
       }
-      if (states.options.size === 0) {
+      if (props.options.length === 0) {
         return props.noDataText || "无数据"
       }
     }
@@ -93,7 +90,7 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
   const readonly = computed(
     () => !props.filterable || props.isMultiple || !states.visible
   )
-  const debounce = computed(() => (props.remote ? 300 : 0))
+  const debounceTimeout = computed(() => (props.remote ? 300 : 0))
   const dropdownVisible = computed(
     // 如果下拉列表的数据通过远程获取，且未输入查询语句/关键字，则下拉列表也是不可见的
     () => states.visible && emptyText.value !== false
@@ -148,6 +145,7 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
     return -1
   })
   const handleClear = () => {
+    states.query = ''
     ctx.emit('update:modelValue', '')
   }
   const updateHoveringIndex = (idx: number) => {
@@ -286,13 +284,13 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
   const navigateOptions = (direction: 'prev' | 'next') => {
     const currentHoverOptionIdx = states.hoveringIndex
     const step = direction === 'next' ? 1 : -1
-    const len = props.options.length
+    const len = filteredOptions.value.length
     let nextHoverOptionIdx = (currentHoverOptionIdx + step + len) % len
-    let nextHoverOption = props.options[nextHoverOptionIdx]
+    let nextHoverOption = filteredOptions.value[nextHoverOptionIdx]
     while (nextHoverOptionIdx !== currentHoverOptionIdx) {
       if (nextHoverOption.disabled) {
         nextHoverOptionIdx = (nextHoverOptionIdx + step) % len
-        nextHoverOption = props.options[nextHoverOptionIdx]
+        nextHoverOption = filteredOptions.value[nextHoverOptionIdx]
       } else {
         updateHoveringIndex(nextHoverOptionIdx)
         break
@@ -332,15 +330,14 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
     })
     states.softFocus = false
   }
-  // const onInputeChange = () => {
-  //   if (props.filterable && states.query !== states.selectedLabel) {
-  //     states.query = states.selectedLabel
-  //     handleQueryChange(states.query)
-  //   }
-  // }
-  // const debouncedOnInputChange = debounce(() => {
-  //   onInputeChange()
-  // }, debounce.value)
+  const onInputeChange = () => {
+    if (props.filterable && states.query !== states.selectedLabel) {
+      states.query = states.selectedLabel
+    }
+  }
+  const debouncedOnInputChange = debounce(() => {
+    onInputeChange()
+  }, debounceTimeout.value)
 
   watch(
     () => props.modelValue,
@@ -377,5 +374,6 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
     suffixIconReverse,
     selectedIndex,
     navigateOptions,
+    debouncedOnInputChange
   }
 }

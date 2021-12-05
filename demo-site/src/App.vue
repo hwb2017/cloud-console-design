@@ -80,9 +80,9 @@
         :options="options"
         @change="handleSelectChange"
         clearable
+        filterable
         default-first-option
       >
-        <template #empty><p style="color: black">No Data</p></template>
       </c-select>
     </div>
   </div>
@@ -155,6 +155,16 @@ export default defineComponent({
       {
         value: "选项5",
         label: "北京烤鸭",
+        disabled: false,
+      },
+      {
+        value: "选项6",
+        label: "黄桃酱",
+        disabled: true,
+      },
+      {
+        value: "选项7",
+        label: "黄皮麻薯",
         disabled: false,
       },
     ]);

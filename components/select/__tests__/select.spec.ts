@@ -368,4 +368,21 @@ describe('Select', () => {
     expect(selectVm.hoveringIndex).toBe(1)
   })
 
+  // test('show options only match the filter condition', async() => {
+  //   const wrapper = getSelectVm({
+  //     filterable: true
+  //   })
+  //   const select = wrapper.findComponent({ name: "CSelect"})
+  //   await select.trigger('click')
+    
+  //   const options = getOptions()
+  //   expect(options.length).toBe(5)
+
+  //   const selectInput = wrapper.find('.ccd-input__inner')
+  //   const selectInputEl = selectInput.element as HTMLInputElement
+  //   selectInputEl.value = '黄'
+  //   await selectInput.trigger('input')
+
+  //   expect(options.length).toBe(1)
+  // })
 })
