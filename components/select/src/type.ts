@@ -7,6 +7,7 @@ export type Option<T = any> = {
   disabled?: boolean
   label: string
   value?: T
+  created?: boolean
   // reserve for flexibility
   [props: string]: any
 }

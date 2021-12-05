@@ -1,7 +1,7 @@
 import { reactive, computed, inject, ref, nextTick, watch, onMounted } from "vue"
 import type { SetupContext, ComponentPublicInstance } from "vue"
 import { isEqual, debounce } from "lodash-es"
-import type { SelectProps, SelectEmits, OptionType, Option } from "./type"
+import type { SelectProps, SelectEmits, OptionType } from "./type"
 import type { CFormContext, KeyType } from "../../../utils/types"
 import { isObject, getValueByPath } from "../../../utils/helper"
 import { flattenOptions } from "./utils"
@@ -9,14 +9,13 @@ import type { InputComponentInstance } from "../../input/src/type"
 
 type ModelValue = KeyType<SelectProps, 'modelValue'>
 
-export function useSelectStates(props: SelectProps) {
+export function useSelectStates() {
   return reactive({
     menuVisibleOnFocus: false,
     visible: false,
     // filterable 开启时，query用于存储模糊匹配的关键字
     query: '',
-    cachedOptions: [] as Option[],
-    createdOptions: [] as Option[],
+    createdOptions: [] as OptionType[],
     selectedLabel: '',
     hoveringIndex: -1,
     previousValue: '',
@@ -41,6 +40,7 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
   const popperSize = ref(-1)
   const cForm = inject<CFormContext>('CForm', {} as CFormContext)
   
+  const creatingOption = ref<OptionType | null>(null)
   const selectDisabled = computed(() => props.disabled || cForm.disabled)
   const emptyText = computed(() => {
     if (props.loading) {
@@ -105,8 +105,11 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
       return [] as OptionType[]
     }
     const targetOption = [] as OptionType[]
-    props.options
-      .concat(states.createdOptions)
+    if (creatingOption.value !== null) {
+      targetOption.push(creatingOption.value)
+    }
+    states.createdOptions
+      .concat(props.options)
       .forEach((v) => {
         if (Array.isArray(v.options)) {
           const filtered = v.options.filter(isValidOption)
@@ -165,13 +168,11 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
       if (Array.isArray(props.modelValue)) {
         if (props.modelValue.length > 0) {
           let initHovering = false
-          states.cachedOptions.length = 0
           ;(props.modelValue).forEach((selected) => {
             const itemIndex = filteredOptions.value.findIndex(
               (option) => option.value === selected
             )
             if (~itemIndex) {
-              states.cachedOptions.push(filteredOptions.value[itemIndex])
               // 初始化状态时将第一个选中的选项的状态置为 hovering
               if (!initHovering) {
                 updateHoveringIndex(itemIndex)
@@ -244,7 +245,11 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
   }
   // 当选项被点击或者通过键盘上下键选中时触发的回调函数
   const onSelect = (option: OptionType, byClick = true) => {
-    const idx = props.options.findIndex((item) => item.value === option.value)
+    creatingOption.value = null
+    if (option.created) {
+      states.createdOptions.push(option)
+    }
+    const idx = filteredOptions.value.findIndex((item) => item.value === option.value)
     if (props.isMultiple) {
       if (Array.isArray(props.modelValue)) {
         const selectedOptions = props.modelValue.slice()
@@ -252,8 +257,6 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
         // 选中已经在选中选项中的选项，则代表反选，从选中选项中删除该选项
         if (index > -1) {
           selectedOptions.splice(index, 1)
-          states.cachedOptions.splice(index, 1)
-          // removeNewOption()
         } else if (
           // index 为 -1 说明原来选中的选项中没有该选项，则加入该选项到选中的选项中
           // multipleLimit 小于 0 表示没有限制
@@ -261,8 +264,6 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
           selectedOptions.length < props.multipleLimit
         ) {
           selectedOptions.push(option.value)
-          states.cachedOptions.push(option)
-          // selectNewOption(option)
           updateHoveringIndex(idx)
         }
         update(selectedOptions)
@@ -274,10 +275,6 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
       update(option.value)
       states.isComposing = false
       states.isSilentBlur = byClick
-      // selctNewOption(option)
-      // if (!option.created) {
-      //   clearAllNewOption()
-      // }
       updateHoveringIndex(idx)
     }
   }
@@ -333,6 +330,13 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
   const onInputeChange = () => {
     if (props.filterable && states.query !== states.selectedLabel) {
       states.query = states.selectedLabel
+      if (props.allowCreate) {
+        creatingOption.value = {
+          label: states.selectedLabel,
+          value: states.selectedLabel,
+          created: true,
+        }
+      }
     }
   }
   const debouncedOnInputChange = debounce(() => {

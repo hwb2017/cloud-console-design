@@ -82,6 +82,7 @@
         clearable
         filterable
         default-first-option
+        allow-create
       >
       </c-select>
     </div>

@@ -135,7 +135,7 @@ export default defineComponent({
     'visible-change',
   ],
   setup(props: SelectProps, ctx) {
-    const states = useSelectStates(props)
+    const states = useSelectStates()
     const {
       selectedLabel,
       visible,

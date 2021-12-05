@@ -373,16 +373,37 @@ describe('Select', () => {
   //     filterable: true
   //   })
   //   const select = wrapper.findComponent({ name: "CSelect"})
-  //   await select.trigger('click')
+  //   const selectVm = select.vm as SelectComponentInstance
+  //   const input = wrapper.find('input')
+  //   input.element.focus()
     
   //   const options = getOptions()
   //   expect(options.length).toBe(5)
 
-  //   const selectInput = wrapper.find('.ccd-input__inner')
-  //   const selectInputEl = selectInput.element as HTMLInputElement
-  //   selectInputEl.value = '黄'
-  //   await selectInput.trigger('input')
+  //   selectVm.selectedLabel = '黄'
+  //   selectVm.debouncedOnInputChange()
+  //   await nextTick()
 
+  //   console.log(document.body.innerHTML)
   //   expect(options.length).toBe(1)
+  // })
+
+  // test('allow create', async() => {
+  //   const wrapper = getSelectVm({
+  //     filterable: true,
+  //     allowCreate: true
+  //   })
+  //   const select = wrapper.findComponent({ name: 'CSelect' })
+  //   const selectVm = select.vm as SelectComponentInstance
+  //   const input = wrapper.find('input')
+  //   input.element.focus()
+  //   selectVm.selectedLabel = 'new'
+  //   selectVm.debouncedOnInputChange()
+  //   await nextTick()
+  //   const options = getOptions()
+  //   const target = options.filter((option) => option.textContent === 'new')
+  //   target[0]?.click()
+  //   await nextTick()
+  //   expect((wrapper.vm as any).value).toBe('new')
   // })
 })
