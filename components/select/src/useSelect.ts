@@ -3,7 +3,6 @@ import type { SetupContext, ComponentPublicInstance } from "vue"
 import { isEqual, debounce } from "lodash-es"
 import type { SelectProps, SelectEmits, OptionType } from "./type"
 import type { CFormContext, KeyType } from "../../../utils/types"
-import { isObject, getValueByPath } from "../../../utils/helper"
 import { flattenOptions } from "./utils"
 import type { InputComponentInstance } from "../../input/src/type"
 
@@ -17,6 +16,7 @@ export function useSelectStates() {
     query: '',
     createdOptions: [] as OptionType[],
     selectedLabel: '',
+    selectedLabels: [] as string[],
     hoveringIndex: -1,
     previousValue: '',
     isComposing: false,
@@ -77,9 +77,11 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
     }
   }
   const showClose = computed(() => {
-    return props.modelValue !== '' && 
-      states.inputHovering &&
-      props.clearable
+    return props.modelValue !== undefined
+      ? props.modelValue.length > 0
+      && states.inputHovering
+      && props.clearable
+      : false
   })
   const suffixIconClass = computed(() => {
     return `ccd-icon-${props.suffixIconName}`
@@ -166,13 +168,15 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
     resetHoverIndex()
     if (props.isMultiple) {
       if (Array.isArray(props.modelValue)) {
-        if (props.modelValue.length > 0) {
+        const selectedValues = props.modelValue.slice()
+        if (selectedValues.length > 0) {
           let initHovering = false
-          ;(props.modelValue).forEach((selected) => {
+          ;(selectedValues).forEach((selected) => {
             const itemIndex = filteredOptions.value.findIndex(
               (option) => option.value === selected
             )
             if (~itemIndex) {
+              states.selectedLabels.push(filteredOptions.value[itemIndex].label)
               // 初始化状态时将第一个选中的选项的状态置为 hovering
               if (!initHovering) {
                 updateHoveringIndex(itemIndex)
@@ -181,8 +185,9 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
             }
           })
         } else {
+          states.selectedLabels = []
           if (props.defaultFirstOption) {
-            const firstAvailableOptionIdx = props.options.findIndex(o => {
+            const firstAvailableOptionIdx = filteredOptions.value.findIndex(o => {
               return o.disabled === undefined || o.disabled === false
             })
             updateHoveringIndex(firstAvailableOptionIdx)
@@ -191,12 +196,11 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
       }
     } else {
       if (props.modelValue) {
-        const options = filteredOptions.value
-        const selectedItemIndex = options.findIndex(
+        const selectedItemIndex = filteredOptions.value.findIndex(
           (o) => o.value === props.modelValue
         )
         if (~selectedItemIndex) {
-          states.selectedLabel = options[selectedItemIndex].label
+          states.selectedLabel = filteredOptions.value[selectedItemIndex].label
           updateHoveringIndex(selectedItemIndex)
         } else {
           states.selectedLabel = `${props.modelValue}`
@@ -204,7 +208,7 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
       } else {
         states.selectedLabel = ''
         if (props.defaultFirstOption) {
-          const firstAvailableOptionIdx = props.options.findIndex(o => {
+          const firstAvailableOptionIdx = filteredOptions.value.findIndex(o => {
             return o.disabled === undefined || o.disabled === false
           })
           updateHoveringIndex(firstAvailableOptionIdx)
@@ -212,23 +216,6 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
       }
     }
     calculatePopperSize()
-  }
-  const getValueIndex = (arr: Array<unknown> = [], value: unknown) => {
-    if (!isObject(value)) {
-      return arr.indexOf(value)
-    }
-    const valueKey = props.valueKey
-    let index = -1
-    arr.some((item, i) => {
-      if (isObject(arr)) {
-        if (getValueByPath(arr, valueKey) === getValueByPath(value, valueKey)) {
-          index = i
-          return true
-        }
-      }
-      return false
-    })
-    return index
   }
   const update = (val: ModelValue) => {
     ctx.emit('update:modelValue', val)
@@ -252,21 +239,24 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
     const idx = filteredOptions.value.findIndex((item) => item.value === option.value)
     if (props.isMultiple) {
       if (Array.isArray(props.modelValue)) {
-        const selectedOptions = props.modelValue.slice()
-        const index = getValueIndex(selectedOptions, option.value)
+        const selectedValues = props.modelValue.slice()
+        const index = selectedValues.findIndex((selected) => selected === option.value)
         // 选中已经在选中选项中的选项，则代表反选，从选中选项中删除该选项
         if (index > -1) {
-          selectedOptions.splice(index, 1)
+          selectedValues.splice(index, 1)
         } else if (
           // index 为 -1 说明原来选中的选项中没有该选项，则加入该选项到选中的选项中
-          // multipleLimit 小于 0 表示没有限制
+          // multipleLimit 小于等于 0 表示没有限制
           props.multipleLimit <= 0 ||
-          selectedOptions.length < props.multipleLimit
+          selectedValues.length < props.multipleLimit
         ) {
-          selectedOptions.push(option.value)
+          selectedValues.push(option.value)
           updateHoveringIndex(idx)
         }
-        update(selectedOptions)
+        states.selectedLabels = props.options
+          .filter((option) => selectedValues.includes(option.value))
+          .map((option) => option.label)
+        update(selectedValues)
         // resetInputHeight()
         setSoftFocus()
       }
@@ -342,6 +332,22 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
   const debouncedOnInputChange = debounce(() => {
     onInputeChange()
   }, debounceTimeout.value)
+  const handleTagClose = (label: string) => {
+    if (props.isMultiple) {
+      if (Array.isArray(props.modelValue)) {
+        const selectedValues = props.modelValue.slice()
+        const closingOption = props.options.find((option) => option.label === label)
+        const index = selectedValues.findIndex((selected) =>  selected === closingOption?.value)
+        if (index > -1) {
+          selectedValues.splice(index, 1)
+          states.selectedLabels = props.options
+            .filter((option) => selectedValues.includes(option.value))
+            .map((option) => option.label)
+          update(selectedValues)
+        }
+      }
+    }
+  }
 
   watch(
     () => props.modelValue,
@@ -378,6 +384,7 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
     suffixIconReverse,
     selectedIndex,
     navigateOptions,
-    debouncedOnInputChange
+    debouncedOnInputChange,
+    handleTagClose,
   }
 }

@@ -47,7 +47,7 @@
         <c-button>Hover to active</c-button>
       </template>
     </c-popover>
-    <div>
+    <div id="tags">
       <c-tag
         v-for="tag in tags"
         :key="tag"
@@ -80,9 +80,7 @@
         :options="options"
         @change="handleSelectChange"
         clearable
-        filterable
-        default-first-option
-        allow-create
+        is-multiple
       >
       </c-select>
     </div>
@@ -129,9 +127,9 @@ export default defineComponent({
       console.log("scroll", e);
     };
     const handleSelectChange = () => {
-      console.log("change");
+      console.log(selectedValue.value);
     };
-    const selectedValue = ref("");
+    const selectedValue = ref(["选项2"]);
     const options = ref([
       {
         value: "选项1",
@@ -203,9 +201,6 @@ export default defineComponent({
       color: #42b983;
     }
   }
-  .ccd-tag + .ccd-tag {
-    margin-left: 10px;
-  }
   .button-new-tag {
     margin-left: 10px;
     height: 30px;
@@ -238,6 +233,11 @@ export default defineComponent({
     margin-top: 20px;
     width: 200px;
     height: 300px;
+  }
+}
+#tags {
+  .ccd-tag + .ccd-tag {
+    margin-left: 10px;
   }
 }
 </style>

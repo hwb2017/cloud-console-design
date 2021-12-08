@@ -68,7 +68,7 @@ const getSelectVm = (configs: Partial<SelectProps> = {}, options?: OptionType[])
       ref="select"
       :options="options"
       v-model="value"
-      :is-multipe="isMultiple"
+      :is-multiple="isMultiple"
       :multiple-limit="multipleLimit"
       :popper-class="popperClass"
       :clearable="clearable"  
@@ -406,4 +406,21 @@ describe('Select', () => {
   //   await nextTick()
   //   expect((wrapper.vm as any).value).toBe('new')
   // })
+
+  test('multiple select', async() => {
+    const wrapper = getSelectVm({ isMultiple: true })
+    await wrapper.findComponent({ name: 'CSelect' }).trigger('click')
+    const options = getOptions()
+    const vm = wrapper.vm as any
+    vm.value = ['选项1']
+    await nextTick()
+    options[1].click()
+    await nextTick()
+    options[3].click()
+    await nextTick()
+    expect(vm.value.indexOf('选项2') > -1 && vm.value.indexOf('选项4') > -1).toBeTruthy()
+    const tagCloseIcons = wrapper.findAll('.ccd-tag__close')
+    await tagCloseIcons[0].trigger('click')
+    expect(vm.value.indexOf('选项1')).toBe(-1)
+  })
 })

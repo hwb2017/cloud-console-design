@@ -51,6 +51,24 @@
       }
     }
   }
+
+  &__tags {
+    position: absolute;
+    z-index: var(--ccd-index-normal);
+    height: 28px;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    display: flex;
+    width: 170px;
+    align-items: center;
+    line-height: normal;
+    background: var(--ccd-color-white);
+
+    .ccd-tag + .ccd-tag {
+      margin-left: 5px;
+    }
+  } 
 }
 
 .ccd-select-dropdown {

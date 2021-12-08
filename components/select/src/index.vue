@@ -21,7 +21,23 @@
     >
       <template #trigger>
         <div class="select-trigger" ref="selection$">
-          <!-- <div v-if="isMultiple"></div> -->
+          <div 
+            v-if="isMultiple"
+            class="ccd-select__tags"
+          >
+            <span>
+              <c-tag 
+                v-for="label in selectedLabels"
+                :key="label"
+                closable 
+                theme="plain"
+                @close="handleTagClose(label)"
+              >
+              {{ label }}
+              </c-tag>
+            </span>
+            <input v-if="filterable" class="ccd-select__input"/>
+          </div>
           <c-input
             ref="reference$"
             v-model="selectedLabel"
@@ -76,16 +92,16 @@
 </template>
 <script lang="ts">
 import { defineComponent, toRefs, provide } from "vue"
-import { array, bool, integer, object, oneOf, oneOfType, string, number } from 'vue-types'
+import { array, bool, integer, oneOf, oneOfType, string } from 'vue-types'
 import CInput from "../../input"
 import CPopover, { Effect } from "../../popover"
-// import CTag from "../../tag"
+import CTag from "../../tag"
 import CSelectDropdown from "./select-dropdown.vue"
 import type { OptionType, SelectProps, SelectContext } from "./type"
 import { useSelectStates, useSelect } from "./useSelect"
 
 const selectProps = {
-  modelValue: oneOfType([array(), string(), number(), bool(), object()]),
+  modelValue: oneOfType([array<string>(), string()]),
   disabled: bool().def(false),
   // Specifies the text to display when a data fetching error occurs. Make sure that you provide recoveryText
   errorText: string().def('Fetch error'),
@@ -123,7 +139,7 @@ export default defineComponent({
   components: {
     CInput,
     CPopover,
-    // CTag,
+    CTag,
     CSelectDropdown,
   },
   props: selectProps,
@@ -138,6 +154,7 @@ export default defineComponent({
     const states = useSelectStates()
     const {
       selectedLabel,
+      selectedLabels,
       visible,
       inputHovering,
       hoveringIndex,
@@ -162,6 +179,7 @@ export default defineComponent({
       selectedIndex,
       navigateOptions,
       debouncedOnInputChange,
+      handleTagClose,
     } = useSelect(props, states, ctx)
 
     provide<SelectContext>("CSelect", {
@@ -200,7 +218,9 @@ export default defineComponent({
       suffixIconReverse,
       navigateOptions,
       selectHoveringOption,
-      debouncedOnInputChange
+      debouncedOnInputChange,
+      selectedLabels,
+      handleTagClose,
     }
   },
 })

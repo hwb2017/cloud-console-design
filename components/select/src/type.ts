@@ -6,21 +6,17 @@ export type SelectComponentInstance = InstanceType<typeof Select>
 export type Option<T = any> = {
   disabled?: boolean
   label: string
-  value?: T
+  value: T
   created?: boolean
   // reserve for flexibility
   [props: string]: any
 }
 
 export type OptionGroup<T = any> = Option & { 
-  options: Array<T>
+  options?: Array<T>
 }
 
 export type OptionType<T = any> = Option<T> | OptionGroup<T>
-
-interface SelectGroupContext {
-  disabled: boolean
-}
 
 export interface QueryChangeCtx {
   query: string
@@ -42,7 +38,7 @@ export interface SelectContext {
 }
 
 export interface SelectProps {
-  modelValue?: unknown[] | string | number | boolean | { [key: string]: unknown },
+  modelValue?: string[] | string,
   disabled: boolean,
   errorText: string,
   finishedText: string,
