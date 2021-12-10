@@ -1,7 +1,7 @@
 import { reactive, computed, inject, ref, nextTick, watch, onMounted } from "vue"
 import type { SetupContext, ComponentPublicInstance } from "vue"
 import { isEqual, debounce } from "lodash-es"
-import type { SelectProps, SelectEmits, OptionType } from "./type"
+import type { SelectProps, SelectEmits, OptionType, Option } from "./type"
 import type { CFormContext, KeyType } from "../../../utils/types"
 import { flattenOptions } from "./utils"
 import type { InputComponentInstance } from "../../input/src/type"
@@ -16,13 +16,14 @@ export function useSelectStates() {
     query: '',
     createdOptions: [] as OptionType[],
     selectedLabel: '',
-    selectedLabels: [] as string[],
     hoveringIndex: -1,
     previousValue: '',
     isComposing: false,
     isSilentBlur: false,
     softFocus: false,
     inputHovering: false,
+    inputWidth: 0,
+    inputHeight: 0,
   })
 }
 
@@ -149,6 +150,19 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
     }
     return -1
   })
+  const selectedOptions = computed<OptionType[]>(() => {
+    const result = [] as OptionType[]
+    if (props.isMultiple && Array.isArray(props.modelValue)) {
+        props.modelValue.forEach((selected) => {
+          const itemIndex = props.options.findIndex((option) => option.value === selected)
+          if (itemIndex > -1) {
+            result.push(props.options[itemIndex])
+          }
+        })
+    }
+    return result
+  })
+
   const handleClear = () => {
     states.query = ''
     ctx.emit('update:modelValue', '')
@@ -171,12 +185,11 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
         const selectedValues = props.modelValue.slice()
         if (selectedValues.length > 0) {
           let initHovering = false
-          ;(selectedValues).forEach((selected) => {
-            const itemIndex = filteredOptions.value.findIndex(
+          selectedValues.forEach((selected) => {
+            const itemIndex = props.options.findIndex(
               (option) => option.value === selected
             )
             if (~itemIndex) {
-              states.selectedLabels.push(filteredOptions.value[itemIndex].label)
               // 初始化状态时将第一个选中的选项的状态置为 hovering
               if (!initHovering) {
                 updateHoveringIndex(itemIndex)
@@ -185,7 +198,6 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
             }
           })
         } else {
-          states.selectedLabels = []
           if (props.defaultFirstOption) {
             const firstAvailableOptionIdx = filteredOptions.value.findIndex(o => {
               return o.disabled === undefined || o.disabled === false
@@ -252,10 +264,7 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
         ) {
           selectedValues.push(option.value)
           updateHoveringIndex(idx)
-        }
-        states.selectedLabels = props.options
-          .filter((option) => selectedValues.includes(option.value))
-          .map((option) => option.label)
+        }      
         update(selectedValues)
         // resetInputHeight()
         setSoftFocus()
@@ -332,21 +341,23 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
   const debouncedOnInputChange = debounce(() => {
     onInputeChange()
   }, debounceTimeout.value)
-  const handleTagClose = (label: string) => {
+  const handleTagClose = (option: OptionType) => {
     if (props.isMultiple) {
       if (Array.isArray(props.modelValue)) {
         const selectedValues = props.modelValue.slice()
-        const closingOption = props.options.find((option) => option.label === label)
-        const index = selectedValues.findIndex((selected) =>  selected === closingOption?.value)
+        const index = selectedValues.findIndex((selected) =>  selected === option.value)
         if (index > -1) {
           selectedValues.splice(index, 1)
-          states.selectedLabels = props.options
-            .filter((option) => selectedValues.includes(option.value))
-            .map((option) => option.label)
           update(selectedValues)
         }
       }
     }
+  }
+  const resetInputWidth = () => {
+    states.inputWidth = reference$.value?.$el?.getBoundingClientRect().width ?? 0
+  }
+  const handleResize = () => {
+    resetInputWidth()
   }
 
   watch(
@@ -386,5 +397,7 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
     navigateOptions,
     debouncedOnInputChange,
     handleTagClose,
+    handleResize,
+    selectedOptions,
   }
 }

@@ -68,6 +68,15 @@
     .ccd-tag + .ccd-tag {
       margin-left: 5px;
     }
+
+    .ccd-tag {
+      .ccd-select__tags-text {
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+        vertical-align: middle;
+      }
+    }
   } 
 }
 

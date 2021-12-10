@@ -133,17 +133,20 @@ export default defineComponent({
     const options = ref([
       {
         value: "选项1",
-        label: "黄金糕",
+        label:
+          "黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕",
         disabled: false,
       },
       {
         value: "选项2",
-        label: "双皮奶",
+        label:
+          "双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶",
         disabled: false,
       },
       {
         value: "选项3",
-        label: "蚵仔煎",
+        label:
+          "蚵仔煎蚵仔煎蚵仔煎蚵仔煎蚵仔煎蚵仔煎蚵仔煎蚵仔煎蚵仔煎蚵仔煎蚵仔煎蚵仔煎蚵仔煎",
         disabled: false,
       },
       {

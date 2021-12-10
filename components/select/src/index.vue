@@ -25,15 +25,45 @@
             v-if="isMultiple"
             class="ccd-select__tags"
           >
-            <span>
+            <span v-if="collapseTags">
               <c-tag 
-                v-for="label in selectedLabels"
-                :key="label"
+                v-if="selectedOptions.length >= 1"
                 closable 
                 theme="plain"
-                @close="handleTagClose(label)"
+                @close="handleTagClose(selectedOptions[0])"
               >
-              {{ label }}
+                <span 
+                  class="ccd-select__tags-text"
+                  :style="{ maxWidth: inputWidth - 123 + 'px' }"
+                >
+                  {{ selectedOptions[0].label }}
+                </span>
+              </c-tag>
+              <c-tag 
+                v-if="selectedOptions.length > 1"
+                theme="plain"
+              >
+                <span 
+                  class="ccd-select__tags-text"
+                >
+                  +{{ selectedOptions.length - 1 }}
+                </span>
+              </c-tag>              
+            </span>  
+            <span v-else>
+              <c-tag 
+                v-for="option in selectedOptions"
+                :key="option.value"
+                closable 
+                theme="plain"
+                @close="handleTagClose(option)"
+              >
+                <span 
+                  class="ccd-select__tags-text"
+                  :style="{ maxWidth: inputWidth - 75 + 'px' }"
+                >
+                  {{ option.label }}
+                </span>
               </c-tag>
             </span>
             <input v-if="filterable" class="ccd-select__input"/>
@@ -91,7 +121,7 @@
   </div>
 </template>
 <script lang="ts">
-import { defineComponent, toRefs, provide } from "vue"
+import { defineComponent, toRefs, provide, onMounted } from "vue"
 import { array, bool, integer, oneOf, oneOfType, string } from 'vue-types'
 import CInput from "../../input"
 import CPopover, { Effect } from "../../popover"
@@ -154,10 +184,10 @@ export default defineComponent({
     const states = useSelectStates()
     const {
       selectedLabel,
-      selectedLabels,
       visible,
       inputHovering,
       hoveringIndex,
+      inputWidth,
     } = toRefs(states)
     const {
       reference$,
@@ -180,6 +210,8 @@ export default defineComponent({
       navigateOptions,
       debouncedOnInputChange,
       handleTagClose,
+      handleResize,
+      selectedOptions,
     } = useSelect(props, states, ctx)
 
     provide<SelectContext>("CSelect", {
@@ -194,6 +226,10 @@ export default defineComponent({
       const hoveringOption = filteredOptions.value[hoveringIndex.value]
       onSelect(hoveringOption, false)
     }
+    
+    onMounted(() => {
+      handleResize()
+    })
 
     return {
       reference$,
@@ -219,8 +255,10 @@ export default defineComponent({
       navigateOptions,
       selectHoveringOption,
       debouncedOnInputChange,
-      selectedLabels,
+      selectedOptions,
       handleTagClose,
+      inputWidth,
+      handleResize,
     }
   },
 })

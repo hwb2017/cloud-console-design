@@ -423,4 +423,142 @@ describe('Select', () => {
     await tagCloseIcons[0].trigger('click')
     expect(vm.value.indexOf('选项1')).toBe(-1)
   })
+
+  test('multiple select when content overflow', async () => {
+    const wrapper = _mount(
+      `
+      <c-select v-model="selectedList" is-multiple :options="options">
+      </c-select>
+      `,
+      () => ({
+        options: [
+          {
+            value: '选项1',
+            label:
+              '黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕',
+          },
+          {
+            value: '选项2',
+            label:
+              '双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶',
+          },
+          {
+            value: '选项3',
+            label: '蚵仔煎蚵仔煎蚵仔煎蚵仔煎蚵仔煎蚵仔煎',
+          },
+          {
+            value: '选项4',
+            label: '龙须面',
+          },
+          {
+            value: '选项5',
+            label: '北京烤鸭',
+          },
+        ],
+        selectedList: [],        
+      })
+    )
+    const selectWrapper = wrapper.findComponent({ name: 'CSelect' })
+    await selectWrapper.trigger('click')
+    const options = getOptions()
+    const inputDom = selectWrapper.findComponent({ name: 'CInput' }).element
+    const inputRect: DOMRect = {
+      height: 40,
+      width: 221,
+      x: 44,
+      y: 8,
+      top: 8,
+      bottom: 48,
+      left: 44,
+      right: 265,
+      toJSON: () => {}
+    }
+    const mockInputWidth = jest
+      .spyOn(inputDom, 'getBoundingClientRect')
+      .mockReturnValue(inputRect)
+    ;(selectWrapper.vm as SelectComponentInstance).handleResize()
+    await nextTick()
+    options[0].click()
+    await nextTick()
+    options[1].click()
+    await nextTick()
+    options[2].click()
+    await nextTick()
+    const tagsWrappers = selectWrapper.findAll<HTMLSpanElement>('.ccd-select__tags-text')
+    for (let i = 0; i < tagsWrappers.length; i++) {
+      const tagWrapperDom = tagsWrappers[i].element
+      expect(
+        parseInt(tagWrapperDom.style.maxWidth) === inputRect.width - 75
+      ).toBe(true)
+    }
+    mockInputWidth.mockRestore()
+  })
+
+  test('multiple select with collapseTags when content overflow', async () => {
+    const wrapper = _mount(
+      `
+      <c-select v-model="selectedList" is-multiple collapse-tags :options="options">
+      </c-select>
+    `,
+      () => ({
+        options: [
+          {
+            value: '选项1',
+            label:
+              '黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕黄金糕',
+          },
+          {
+            value: '选项2',
+            label:
+              '双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶双皮奶',
+          },
+          {
+            value: '选项3',
+            label: '蚵仔煎蚵仔煎蚵仔煎蚵仔煎蚵仔煎蚵仔煎',
+          },
+          {
+            value: '选项4',
+            label: '龙须面',
+          },
+          {
+            value: '选项5',
+            label: '北京烤鸭',
+          },
+        ],
+        selectedList: [],
+      })
+    )
+    const selectWrapper = wrapper.findComponent({ name: 'CSelect' })
+    await selectWrapper.trigger('click')
+    const options = getOptions()
+    const inputDom = selectWrapper.findComponent({ name: 'CInput' }).element
+    const inputRect: DOMRect = {
+      height: 40,
+      width: 221,
+      x: 44,
+      y: 8,
+      top: 8,
+      bottom: 48,
+      left: 44,
+      right: 265,
+      toJSON: () => {}
+    }
+    const mockInputWidth = jest
+      .spyOn(inputDom, 'getBoundingClientRect')
+      .mockReturnValue(inputRect)
+    ;(selectWrapper.vm as SelectComponentInstance).handleResize()
+    await nextTick()
+    options[0].click()
+    await nextTick()
+    options[1].click()
+    await nextTick()
+    options[2].click()
+    await nextTick()
+    const tagWrappers = wrapper.findAll<HTMLSpanElement>('.ccd-select__tags-text')
+    const tagWrapperDom = tagWrappers[0].element
+    expect(
+      parseInt(tagWrapperDom.style.maxWidth) === inputRect.width - 123
+    ).toBe(true)
+    mockInputWidth.mockRestore()
+  })  
 })
