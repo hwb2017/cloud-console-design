@@ -560,5 +560,80 @@ describe('Select', () => {
       parseInt(tagWrapperDom.style.maxWidth) === inputRect.width - 123
     ).toBe(true)
     mockInputWidth.mockRestore()
-  })  
+  })
+  
+  test('multiple remove-tag', async() => {
+    const wrapper = _mount(
+      `
+      <c-select v-model="value" is-multiple :options="options">        
+      </c-select>
+      `,
+      () => ({
+        options: [
+          {
+            value: '选项1',
+            label: '黄金糕',
+          },
+          {
+            value: '选项2',
+            label: '双皮奶',
+          },
+          {
+            value: '选项3',
+            label: '蚵仔煎',
+          },
+          {
+            value: '选项4',
+            label: '龙须面',
+          },
+          {
+            value: '选项5',
+            label: '北京烤鸭',
+          },
+        ],
+        value: ['选项1', '选项2'],
+      })     
+    )
+    const vm = wrapper.vm as any
+    await nextTick()
+    expect(vm.value.length).toBe(2)
+    const tagCloseIcons = wrapper.findAll('.ccd-tag__close')
+    await tagCloseIcons[1].trigger('click')
+    expect(vm.value.length).toBe(1)
+    await tagCloseIcons[0].trigger('click')
+    expect(vm.value.length).toBe(0)
+  })
+
+  test('multiple limit', async() => {
+    const wrapper = getSelectVm({ isMultiple: true, multipleLimit: 1})
+    const vm = wrapper.vm as any
+    await wrapper.findComponent({ name: 'CSelect' }).trigger('click')
+    const options = getOptions()
+    options[1].click()
+    await nextTick()
+    expect(vm.value.indexOf('选项2') > -1).toBeTruthy()
+    options[3].click()
+    await nextTick()
+    expect(vm.value.indexOf('选项4')).toBe(-1)
+  })
+
+  test('should not open popper when automatic-dropdown not set', async() => {
+    const wrapper = getSelectVm()
+    const select = wrapper.findComponent({ name: 'CSelect' })
+    await select
+      .findComponent({ name: 'CInput' })
+      .find('input')
+      .element.focus()
+    expect((select.vm as SelectComponentInstance).visible).toBe(false)
+  })
+
+  test('should open popper when automatic-dropdown is set', async () => {
+    const wrapper = getSelectVm({ automaticDropdown: true })
+    const select = wrapper.findComponent({ name: 'CSelect' })
+    await select
+      .findComponent({ name: 'CInput' })
+      .find('input')
+      .trigger('focus')
+    expect((select.vm as SelectComponentInstance).visible).toBe(true)
+  })
 })
