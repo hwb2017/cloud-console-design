@@ -24,16 +24,14 @@ export interface QueryChangeCtx {
 
 export interface SelectContext {
   isMultiple?: boolean
+  multipleLimit: number
   queryChange?: Ref<QueryChangeCtx>
   groupQueryChange?: Ref<string>
   selectWrapper?: HTMLElement
-  cachedOptions?: Map<any, any>
   hoverIndex: Ref<number>
-  selectedIndex: ComputedRef<number>
-  optionsCount?: number
+  selectedIndex: ComputedRef<number[]>
   filteredOptionsCount?: number
   options: OptionType[]
-  selected?: any | any[]
   onSelect: (option: OptionType, byClick?: boolean) => void
 }
 

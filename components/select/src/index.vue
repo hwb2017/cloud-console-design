@@ -22,6 +22,7 @@
       <template #trigger>
         <div class="select-trigger" ref="selection$">
           <div 
+            ref="tags$"
             v-if="isMultiple"
             class="ccd-select__tags"
           >
@@ -147,7 +148,7 @@ const selectProps = {
   keepOpen: bool().def(false),
   clearable: bool().def(false),
   isMultiple: bool().def(false),
-  multipleLimit: integer().def(5),
+  multipleLimit: integer().def(0),
   automaticDropdown: bool().def(false),
   autocomplete: bool().def(false),
   filterable: bool().def(false),
@@ -191,6 +192,9 @@ export default defineComponent({
     } = toRefs(states)
     const {
       reference$,
+      tags$,
+      popper$,
+      selection$,
       toggleDropdown,
       dropdownVisible,
       currentPlaceholder,
@@ -216,6 +220,7 @@ export default defineComponent({
 
     provide<SelectContext>("CSelect", {
       isMultiple: props.isMultiple,
+      multipleLimit: props.multipleLimit,
       options: props.options,
       onSelect,
       hoverIndex: hoveringIndex,
@@ -233,6 +238,9 @@ export default defineComponent({
 
     return {
       reference$,
+      tags$,
+      popper$,
+      selection$,
       Effect,
       toggleDropdown,
       dropdownVisible,

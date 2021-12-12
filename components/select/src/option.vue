@@ -2,7 +2,7 @@
   <li 
     class="ccd-select-dropdown__item"
     :class="{ 
-      'is-disabled': disabled,
+      'is-disabled': isDisabled,
       'is-hover': isHover,
       'is-selected': isSelected,
     }"
@@ -44,13 +44,25 @@ export default defineComponent({
       return select.hoverIndex.value === attrs['data-index'] || hovering.value
     })
     const isSelected = computed(() => {
-      return select.selectedIndex.value === attrs['data-index']
+      return typeof attrs['data-index'] === 'number' 
+        ? select.selectedIndex.value.includes(attrs['data-index'])
+        : false
+    })
+    const isDisabled = computed(() => {
+      if (props.disabled) {
+        return true
+      }
+      if (select.multipleLimit > 0 && select.selectedIndex.value.length >= select.multipleLimit) {
+        return !isSelected.value
+      }
+      return false
     })
     return {
       handleOptionClick,
       isHover,
       isSelected,
       hovering,
+      isDisabled,
     }    
   }
 })

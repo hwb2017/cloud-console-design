@@ -1,7 +1,7 @@
 import { reactive, computed, inject, ref, nextTick, watch, onMounted } from "vue"
 import type { SetupContext, ComponentPublicInstance } from "vue"
 import { isEqual, debounce } from "lodash-es"
-import type { SelectProps, SelectEmits, OptionType, Option } from "./type"
+import type { SelectProps, SelectEmits, OptionType } from "./type"
 import type { CFormContext, KeyType } from "../../../utils/types"
 import { flattenOptions } from "./utils"
 import type { InputComponentInstance } from "../../input/src/type"
@@ -23,7 +23,6 @@ export function useSelectStates() {
     softFocus: false,
     inputHovering: false,
     inputWidth: 0,
-    inputHeight: 0,
   })
 }
 
@@ -36,6 +35,7 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
   const popper$ = ref<ComponentPublicInstance | null>(null)
   const selectWrapper$ = ref<HTMLDivElement | null>(null)
   const dropdown$ = ref<ComponentPublicInstance | null>(null)
+  const tags$ = ref<HTMLDivElement | null>(null)
 
   // 弹出框的宽度
   const popperSize = ref(-1)
@@ -131,41 +131,53 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
     return flattenOptions(targetOption)
   })
   // 返回当前选中的元素在下拉列表中对应的索引，当选中多个时显示最后一个选中元素对应的索引
-  const selectedIndex = computed<number>(() => {
+  const selectedIndex = computed<number[]>(() => {
     if (props.isMultiple) {
       if (Array.isArray(props.modelValue)) {
-        const len = props.modelValue.length
-        if (props.modelValue.length > 0) {
-          return filteredOptions.value.findIndex(
-            (o) => o.value! === props.modelValue?.[len - 1]
+        const selectedValues = props.modelValue.slice()
+        const result = [] as number[]
+        if (selectedValues.length > 0) {
+          filteredOptions.value.forEach(
+            (o, index) => {
+              if (selectedValues.includes(o.value)) {
+                result.push(index)
+              }
+            }
           )
+          return result
         }
       }
     } else {
       if (props.modelValue) {
-        return filteredOptions.value.findIndex(
+        return [filteredOptions.value.findIndex(
           (o) => o.value === props.modelValue
-        )
+        )]
       }
     }
-    return -1
+    return []
   })
   const selectedOptions = computed<OptionType[]>(() => {
     const result = [] as OptionType[]
-    if (props.isMultiple && Array.isArray(props.modelValue)) {
+    if (Array.isArray(props.modelValue)) {
+      if (props.isMultiple) {
         props.modelValue.forEach((selected) => {
           const itemIndex = props.options.findIndex((option) => option.value === selected)
           if (itemIndex > -1) {
             result.push(props.options[itemIndex])
           }
         })
+      }
     }
     return result
   })
 
   const handleClear = () => {
     states.query = ''
-    ctx.emit('update:modelValue', '')
+    if (props.isMultiple) {
+      update([])
+    } else {
+      update('')
+    }
   }
   const updateHoveringIndex = (idx: number) => {
     states.hoveringIndex = idx
@@ -228,11 +240,13 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
       }
     }
     calculatePopperSize()
+    resetInputHeight()
   }
   const update = (val: ModelValue) => {
     ctx.emit('update:modelValue', val)
     if (!isEqual(props.modelValue, val)) {
       ctx.emit('change', val)
+      resetInputHeight()
     }
     states.previousValue = val?.toString() || ''
   }
@@ -266,7 +280,6 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
           updateHoveringIndex(idx)
         }      
         update(selectedValues)
-        // resetInputHeight()
         setSoftFocus()
       }
     } else {
@@ -356,6 +369,26 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
   const resetInputWidth = () => {
     states.inputWidth = reference$.value?.$el?.getBoundingClientRect().width ?? 0
   }
+  const resetInputHeight = () => {
+    if (props.collapseTags) return
+    nextTick(() => {
+      if (props.isMultiple && Array.isArray(props.modelValue)) {
+        if (!selection$.value) return
+        if (props.modelValue.length > 1) {
+          if (!tags$.value) return
+          const tags = tags$.value.querySelectorAll('.ccd-tag')
+          const tagsTop = tags[0].getBoundingClientRect().top
+          const tagsBottom = tags[tags.length-1].getBoundingClientRect().bottom
+          selection$.value.style.height = `${tagsBottom - tagsTop + 12}px`
+        } else {
+          selection$.value.style.height = ""
+        }
+        if (states.visible) {
+          (popper$.value as any).update()
+        }
+      }
+    }) 
+  }
   const handleResize = () => {
     resetInputWidth()
   }
@@ -378,6 +411,9 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
 
   return {
     reference$,
+    tags$,
+    popper$,
+    selection$,
     toggleDropdown,
     dropdownVisible,
     onSelect,

@@ -22,18 +22,9 @@
     }
   }
 
-  .ccd-input__inner {
-    cursor: pointer;
-    padding-right: 35px;
-    display: block;
-
-    &:focus {
-      border-color: map.get($--select, 'input-focus-border-color');
-    }
-  }
-
   .ccd-input {
     display: block;
+    height: 100%;
     &.is-disabled {
       & .ccd-input__inner {
         cursor: not-allowed;
@@ -50,6 +41,16 @@
         transform: rotateZ(180deg);
       }
     }
+    .ccd-input__inner {
+      cursor: pointer;
+      padding-right: 35px;
+      display: block;
+      height: 100%;
+      min-height: 40px;     
+      &:focus {
+        border-color: map.get($--select, 'input-focus-border-color');
+      }
+    }    
   }
 
   &__tags {
