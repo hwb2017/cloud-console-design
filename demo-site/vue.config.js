@@ -4,6 +4,7 @@ const path = require("path");
 module.exports = {
   configureWebpack: {
     mode: "production",
+    cache: true,
     optimization: {
       usedExports: true,
       minimize: true,
