@@ -1,12 +1,15 @@
 const esModules = ['lodash-es'].join('|');
 
 module.exports = {
-  preset: "@vue/cli-plugin-unit-jest/presets/typescript-and-babel",
   testPathIgnorePatterns: ['/node_modules/', 'dist'],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'json'],
   modulePathIgnorePatterns: ['/node_modules/', 'dist'],
-  transformIgnorePatterns: [`/node_modules/(?!${esModules})`],
+  transformIgnorePatterns: [`/node_modules/.pnpm/(?!${esModules})`],
+  testEnvironment: 'jsdom',
   transform: {
-    "^.+\\.vue$": "vue-jest",
+    "\\.(j|t)s$": "@sucrase/jest-plugin",
+    "\\.vue$": "vue-jest",
+    "\\.(css|scss|png|jpg|svg|ttf|woff|woff2)$": "jest-transform-stub"
   },
   roots: ['<rootDir>'],
   setupFiles: ['./jest.setup.js'],
