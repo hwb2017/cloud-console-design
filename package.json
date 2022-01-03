@@ -1,6 +1,6 @@
 {
   "name": "cloud-console-design",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "private": false,
   "repository": {
     "type": "git",
@@ -10,6 +10,7 @@
   "module": "dist/components/index.js",
   "unpkg": "dist/index.min.js",
   "style": "dist/style/index.css",
+  "types": "dist/types/components/index.d.ts",
   "files": [
     "dist",
     "components"
@@ -19,9 +20,10 @@
   ],
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "pnpm build:bundle && pnpm build:components",
+    "build": "pnpm build:bundle && pnpm build:components && pnpm build:types",
     "build:bundle": "rollup --config ./build/rollup.config.bundle.js",
     "build:components": "node build/individualComponents.js",
+    "build:types": "tsc -p build/tsconfig.json",
     "test": "jest",
     "lint": "vue-cli-service lint",
     "prepublishOnly": "node scripts/prepublish.js",

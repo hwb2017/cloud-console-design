@@ -3,7 +3,6 @@ import type { SetupContext, ComponentPublicInstance } from "vue"
 import { isEqual, debounce } from "lodash-es"
 import type { SelectProps, SelectEmits, OptionType } from "./type"
 import type { CFormContext, KeyType } from "../../../utils/types"
-import { flattenOptions } from "./utils"
 import type { InputComponentInstance } from "../../input/src/type"
 
 type ModelValue = KeyType<SelectProps, 'modelValue'>
@@ -128,7 +127,7 @@ export function useSelect(props: SelectProps, states: States, ctx: SetupContext<
           }
         }
       })
-    return flattenOptions(targetOption)
+    return targetOption
   })
   // 返回当前选中的元素在下拉列表中对应的索引，当选中多个时显示最后一个选中元素对应的索引
   const selectedIndex = computed<number[]>(() => {
