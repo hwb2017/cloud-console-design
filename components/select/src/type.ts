@@ -1,7 +1,4 @@
 import type { Ref, ComputedRef } from "vue"
-import Select from "./index.vue"
-
-export type SelectComponentInstance = InstanceType<typeof Select>
 
 export type Option<T = any> = {
   disabled?: boolean

@@ -1,7 +1,9 @@
 import { mount } from "@vue/test-utils"
 import { nextTick } from "vue"
 import Select from "../src/index.vue"
-import type { SelectComponentInstance, SelectProps, OptionType } from "../src/type"
+import type { SelectProps, OptionType } from "../src/type"
+
+type SelectComponentInstance = InstanceType<typeof Select>
 
 // 预置待测组件 Select
 const _mount = (template: string, data: any = () => ({}), otherObj?: any) =>

@@ -10,7 +10,7 @@
   "module": "dist/components/index.js",
   "unpkg": "dist/index.min.js",
   "style": "dist/style/index.css",
-  "types": "dist/types/components/index.d.ts",
+  "types": "dist/index.d.ts",
   "files": [
     "dist",
     "components"
@@ -23,7 +23,7 @@
     "build": "pnpm build:bundle && pnpm build:components && pnpm build:types",
     "build:bundle": "rollup --config ./build/rollup.config.bundle.js",
     "build:components": "node build/individualComponents.js",
-    "build:types": "tsc -p build/tsconfig.json",
+    "build:types": "ts-node build/genComponentTypes.ts",
     "test": "jest",
     "lint": "vue-cli-service lint",
     "prepublishOnly": "node scripts/prepublish.js",
@@ -37,11 +37,13 @@
     "vue-types": "^4.0.1"
   },
   "devDependencies": {
+    "@microsoft/api-extractor": "^7.19.3",
     "@rollup/plugin-commonjs": "^20.0.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
     "@rollup/plugin-typescript": "^8.2.5",
     "@sucrase/jest-plugin": "^2.2.0",
     "@types/jest": "^27.0.3",
+    "@types/node": "^17.0.8",
     "@typescript-eslint/eslint-plugin": "^4.18.0",
     "@typescript-eslint/parser": "^4.18.0",
     "@vue/cli-plugin-babel": "~4.5.0",
